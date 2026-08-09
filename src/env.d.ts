@@ -1,3 +1,2 @@
 /// <reference types="astro/client" />
-/// <reference types="astro/env" />
-/// <reference types="@sanity/astro/module" />
+/// <reference path="../node_modules/@sanity/astro/module.d.ts" />
