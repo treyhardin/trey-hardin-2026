@@ -1,17 +1,43 @@
 ---
+import Base from '../layouts/base.astro';
+import { PortableText } from 'astro-portabletext';
+import { getHomepage } from '../lib/sanity';
 
+const homepage = await getHomepage();
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base>
+	<div class="constrained">
+		<h1 class="hero-heading">{homepage?.headline}</h1>
+
+		{homepage?.subheadline && (
+			<p class="subheadline">{homepage.subheadline}</p>
+		)}
+
+		{homepage?.bio && (
+			<PortableText value={homepage.bio} />
+		)}
+
+		{homepage?.ctaLabel && homepage?.ctaLink && (
+			<a class="btn btn-primary" href={homepage.ctaLink} target="_blank" rel="noopener noreferrer">
+				{homepage.ctaLabel}
+			</a>
+		)}
+	</div>
+
+	<style is:inline>
+		.hero-heading {
+			line-height: var(--line-height-tight);
+			margin-bottom: var(--space-4);
+		}
+
+		.subheadline {
+			color: var(--color-fg-secondary);
+			margin-bottom: var(--space-16);
+		}
+
+		p {
+			margin-bottom: var(--space-8);
+		}
+	</style>
+</Base>

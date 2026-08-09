@@ -1,0 +1,291 @@
+---
+import Base from '../layouts/base.astro';
+---
+
+<Base>
+	<!-- Styleguide Content -->
+	<div class="styleguide-content constrained">
+
+		<!-- Typography -->
+		<section class="sg-section">
+			<div class="sg-label">Typography</div>
+
+			<div class="sg-specimen">
+				<div class="sg-row"><span class="sg-key">H1</span><h1 class="sg-val">Heading One</h1></div>
+				<div class="sg-row"><span class="sg-key">H2</span><h2 class="sg-val">Heading Two</h2></div>
+				<div class="sg-row"><span class="sg-key">H3</span><h3 class="sg-val">Heading Three</h3></div>
+				<div class="sg-row"><span class="sg-key">H4</span><h4 class="sg-val">Heading Four</h4></div>
+				<div class="sg-row"><span class="sg-key">H5</span><h5 class="sg-val">Heading Five</h5></div>
+				<div class="sg-row"><span class="sg-key">H6</span><h6 class="sg-val">Heading Six</h6></div>
+			</div>
+
+			<div class="sg-specimen">
+				<div class="sg-row"><span class="sg-key">Paragraph</span><p class="sg-val">The quick brown fox jumps over the lazy dog. Design decisions affect millions of users and hundreds of millions in revenue.</p></div>
+				<div class="sg-row"><span class="sg-key">Caption</span><span class="sg-val sg-caption">Source: Trey Hardin portfolio, 2026</span></div>
+				<div class="sg-row"><span class="sg-key">Utility</span><span class="sg-val sg-utility">CATEGORY / SECTION</span></div>
+			</div>
+		</section>
+
+		<!-- Buttons -->
+		<section class="sg-section">
+			<div class="sg-label">Buttons</div>
+
+			<div class="sg-component-grid">
+				<div class="sg-component">
+					<span class="sg-component-label">Primary</span>
+					<button class="btn btn-primary">Primary Button</button>
+				</div>
+				<div class="sg-component">
+					<span class="sg-component-label">Secondary</span>
+					<button class="btn btn-secondary">Secondary Button</button>
+				</div>
+				<div class="sg-component">
+					<span class="sg-component-label">Ghost</span>
+					<button class="btn btn-ghost">Ghost Button</button>
+				</div>
+			</div>
+		</section>
+
+		<!-- Inputs -->
+		<section class="sg-section">
+			<div class="sg-label">Inputs</div>
+
+			<div class="sg-form">
+				<div class="sg-field">
+					<label class="form-label" for="sg-text">Text Input</label>
+					<input class="input" id="sg-text" type="text" placeholder="Enter text…" />
+				</div>
+
+				<div class="sg-field">
+					<label class="form-label" for="sg-textarea">Textarea</label>
+					<textarea class="input" id="sg-textarea" placeholder="Enter longer text…"></textarea>
+				</div>
+
+				<div class="sg-field">
+					<label class="form-label" for="sg-select">Select</label>
+					<select class="input" id="sg-select">
+						<option>Option one</option>
+						<option>Option two</option>
+						<option>Option three</option>
+					</select>
+				</div>
+
+				<div class="sg-field sg-checkbox-group">
+					<div class="field-group">
+						<input type="checkbox" id="sg-check1" checked />
+						<label for="sg-check1">Checkbox label</label>
+					</div>
+					<div class="field-group">
+						<input type="checkbox" id="sg-check2" />
+						<label for="sg-check2">Another checkbox</label>
+					</div>
+				</div>
+
+				<div class="sg-field sg-radio-group">
+					<div class="field-group">
+						<input type="radio" id="sg-radio1" name="sg-radio" checked />
+						<label for="sg-radio1">Radio option one</label>
+					</div>
+					<div class="field-group">
+						<input type="radio" id="sg-radio2" name="sg-radio" />
+						<label for="sg-radio2">Radio option two</label>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Accordion -->
+		<section class="sg-section">
+			<div class="sg-label">Accordion</div>
+
+			<div class="accordion">
+				<div class="accordion-item">
+					<button class="accordion-trigger" aria-expanded="false" data-sg-accordion>
+						<span>What is your design process?</span>
+						<span class="accordion-icon">+</span>
+					</button>
+					<div class="accordion-panel">
+						<p>I start by understanding the problem space, then move through research, ideation, and iterative prototyping. Every decision is grounded in user needs and business constraints.</p>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<button class="accordion-trigger" aria-expanded="false" data-sg-accordion>
+						<span>How do you work with engineering?</span>
+						<span class="accordion-icon">+</span>
+					</button>
+					<div class="accordion-panel">
+						<p>I collaborate directly with engineers from the start — designing in code when possible, building design systems that ship as production components, and ensuring handoff is seamless.</p>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<button class="accordion-trigger" aria-expanded="false" data-sg-accordion>
+						<span>What tools do you use?</span>
+						<span class="accordion-icon">+</span>
+					</button>
+					<div class="accordion-panel">
+						<p>Figma for design, GitHub for version control, and a mix of modern web frameworks. I prefer tools that integrate directly into the development workflow.</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Badges -->
+		<section class="sg-section">
+			<div class="sg-label">Badges</div>
+
+			<div class="sg-component-row">
+				<span class="badge">Default</span>
+				<span class="badge badge-accent">Accent</span>
+				<span class="badge">Design</span>
+				<span class="badge">Engineering</span>
+				<span class="badge">Brand</span>
+			</div>
+		</section>
+
+		<!-- Cards -->
+		<section class="sg-section">
+			<div class="sg-label">Cards</div>
+
+			<div class="sg-component-grid">
+				<div class="card">
+					<span class="badge" style="margin-bottom: var(--space-3);">Case Study</span>
+					<h3>Ecommerce Redesign</h3>
+					<p>Leading a complete redesign of the checkout experience, resulting in a 12% increase in conversion rates.</p>
+				</div>
+				<div class="card">
+					<span class="badge" style="margin-bottom: var(--space-3);">Project</span>
+					<h3>Design System</h3>
+					<p>Building a scalable component library used across 14 product teams and 3 platforms.</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Divider -->
+		<section class="sg-section">
+			<div class="sg-label">Divider</div>
+
+			<p style="margin-bottom: var(--space-4);">Content above the divider.</p>
+			<hr class="divider" />
+			<p>Content below the divider.</p>
+		</section>
+
+		<!-- Links -->
+		<section class="sg-section">
+			<div class="sg-label">Links</div>
+
+			<div class="sg-component-row" style="flex-direction: column; align-items: flex-start;">
+				<a href="#" class="link">Inline link example</a>
+				<a href="#" class="link">Another linked item</a>
+			</div>
+		</section>
+
+	</div>
+
+	<style is:inline>
+		/* ── Styleguide Layout ── */
+		.styleguide-content {
+			padding-top: var(--space-20);
+			padding-bottom: var(--space-32);
+		}
+
+		.sg-section {
+			margin-bottom: var(--space-24);
+		}
+
+		.sg-label {
+			font-family: var(--font-body);
+			font-size: var(--font-size-utility);
+			font-weight: var(--font-weight-medium);
+			text-transform: uppercase;
+			letter-spacing: var(--letter-spacing-utility);
+			color: var(--color-fg-secondary);
+			margin-bottom: var(--space-6);
+		}
+
+		/* ── Specimen Rows ── */
+		.sg-specimen {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-5);
+		}
+
+		.sg-row {
+			display: grid;
+			grid-template-columns: 80px 1fr;
+			gap: var(--space-4);
+			align-items: baseline;
+		}
+
+		.sg-key {
+			font-family: var(--font-mono);
+			font-size: var(--font-size-meta);
+			color: var(--color-fg-secondary);
+			text-align: right;
+			padding-top: 0.15em;
+		}
+
+		.sg-val {
+			/* Inherited from heading/paragraph elements */
+		}
+
+		.sg-caption {
+			font-size: var(--font-size-caption);
+			color: var(--color-fg-secondary);
+		}
+
+		.sg-utility {
+			font-family: var(--font-body);
+			font-size: var(--font-size-utility);
+			font-weight: var(--font-weight-utility);
+			text-transform: uppercase;
+			letter-spacing: var(--letter-spacing-utility);
+		}
+
+		/* ── Component Display ── */
+		.sg-component-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+			gap: var(--space-6);
+		}
+
+		.sg-component {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-3);
+		}
+
+		.sg-component-label {
+			font-family: var(--font-mono);
+			font-size: var(--font-size-meta);
+			color: var(--color-fg-secondary);
+		}
+
+		.sg-component-row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: var(--space-2);
+		}
+
+		/* ── Form Layout ── */
+		.sg-form {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-5);
+			max-width: 480px;
+		}
+
+		.sg-field {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-1);
+		}
+
+		.sg-checkbox-group,
+		.sg-radio-group {
+			flex-direction: row;
+			gap: var(--space-4);
+		}
+	</style>
+
+
+</Base>

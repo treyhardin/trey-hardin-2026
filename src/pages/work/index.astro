@@ -1,0 +1,166 @@
+---
+import BaseLayout from '../../layouts/base.astro';
+import { getAllCaseStudies } from '../../lib/sanity';
+import { urlFor } from '../../lib/image';
+
+const caseStudies = await getAllCaseStudies();
+---
+
+<BaseLayout>
+	<section class="work-listing">
+		<header class="work-header">
+			<h1>Selected Work</h1>
+			<p class="work-subtitle">Projects I've led from concept to launch</p>
+		</header>
+
+		<div class="work-grid">
+			{caseStudies.map((study: any) => (
+				<a href={`/work/${study.slug.current}`} class="work-card">
+					{study.coverImage && (
+						<div class="work-card-image">
+							<img
+								src={urlFor(study.coverImage).width(800).auto('format').url()}
+								alt={study.title}
+								loading="lazy"
+							/>
+						</div>
+					)}
+					<div class="work-card-content">
+						<div class="work-card-meta">
+							{study.client?.name && <span class="work-card-client">{study.client.name}</span>}
+							{study.year && <span class="work-card-year">{study.year}</span>}
+						</div>
+						<h2 class="work-card-title">{study.title}</h2>
+						{study.summary && <p class="work-card-summary">{study.summary}</p>}
+						{study.role && <span class="work-card-role">{study.role}</span>}
+					</div>
+				</a>
+			))}
+		</div>
+
+		{caseStudies.length === 0 && (
+			<div class="work-empty">
+				<p>No case studies yet — add some in <a href="/admin">Sanity Studio</a>.</p>
+			</div>
+		)}
+	</section>
+
+	<style>
+		.work-listing {
+			padding: var(--page-margin);
+		}
+
+		.work-header {
+			margin-bottom: 4rem;
+		}
+
+		.work-header h1 {
+			font-size: var(--font-size-3xl);
+			font-weight: 700;
+			letter-spacing: -0.02em;
+			margin-bottom: 0.5rem;
+		}
+
+		.work-subtitle {
+			color: var(--color-text-muted);
+			font-size: var(--font-size-lg);
+		}
+
+		.work-grid {
+			display: grid;
+			gap: 3rem;
+		}
+
+		.work-card {
+			text-decoration: none;
+			color: inherit;
+			display: grid;
+			grid-template-columns: 1.2fr 1fr;
+			gap: 2rem;
+			align-items: start;
+			padding-bottom: 3rem;
+			border-bottom: 1px solid var(--color-border);
+			transition: opacity 0.2s ease;
+		}
+
+		.work-card:first-of-type {
+			padding-top: 0;
+		}
+
+		.work-card:hover {
+			opacity: 0.7;
+		}
+
+		.work-card-image {
+			aspect-ratio: 16 / 10;
+			overflow: hidden;
+			background: var(--color-surface-raised);
+			border-radius: 4px;
+		}
+
+		.work-card-image img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.work-card-content {
+			display: flex;
+			flex-direction: column;
+			gap: 0.75rem;
+		}
+
+		.work-card-meta {
+			display: flex;
+			gap: 1rem;
+			align-items: center;
+			font-size: var(--font-size-sm);
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			font-family: var(--font-utility);
+			color: var(--color-text-muted);
+		}
+
+		.work-card-client::after {
+			content: '·';
+			margin-left: 0.75rem;
+		}
+
+		.work-card-title {
+			font-size: var(--font-size-xl);
+			font-weight: 600;
+			letter-spacing: -0.01em;
+		}
+
+		.work-card-summary {
+			color: var(--color-text-muted);
+			line-height: 1.6;
+			max-width: 48ch;
+		}
+
+		.work-card-role {
+			font-size: var(--font-size-sm);
+			font-family: var(--font-utility);
+			text-transform: uppercase;
+			letter-spacing: 0.04em;
+			color: var(--color-text-muted);
+		}
+
+		.work-empty {
+			text-align: center;
+			padding: 4rem 0;
+			color: var(--color-text-muted);
+		}
+
+		.work-empty a {
+			color: var(--color-accent);
+		}
+
+		@media (max-width: 640px) {
+			.work-card {
+				grid-template-columns: 1fr;
+				gap: 1rem;
+			}
+		}
+	</style>
+</BaseLayout>

@@ -1,0 +1,159 @@
+---
+// Header: sticky top bar with name, nav links, and contact trigger
+const currentPath = Astro.url.pathname;
+
+interface NavLink {
+	label: string;
+	href: string;
+}
+
+const navLinks: NavLink[] = [
+	{ label: 'Work', href: '/work' },
+	{ label: 'About', href: '/about' },
+	{ label: 'Blog', href: '/blog' },
+	{ label: 'Clients', href: '/clients' },
+];
+---
+
+<header class="site-header">
+	<a href="/" class="site-logo">
+		Trey Hardin
+	</a>
+
+	<nav class="site-nav">
+		{navLinks.map(link => {
+			const isActive = currentPath.startsWith(link.href);
+			return (
+				<a href={link.href} class:list={['nav-link', { active: isActive }]}>
+					{link.label}
+				</a>
+			);
+		})}
+	</nav>
+
+	<button class="contact-trigger" aria-label="Open contact" aria-expanded="false">
+		<span class="contact-trigger-text">Contact</span>
+		<svg class="contact-trigger-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<polyline points="6 9 12 15 18 9" />
+		</svg>
+	</button>
+</header>
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: var(--z-sticky);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: var(--space-4) var(--page-margin);
+		max-width: var(--max-page-width);
+		margin: 0 auto;
+		background: color-mix(in srgb, var(--color-bg) 85%, transparent);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+	}
+
+	.site-logo {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-h6);
+		font-weight: var(--font-weight-heading);
+		letter-spacing: var(--letter-spacing-heading);
+		color: var(--color-fg);
+		text-decoration: none;
+		flex-shrink: 0;
+	}
+
+	.site-logo:hover {
+		text-decoration: none;
+	}
+
+	.site-nav {
+		display: flex;
+		gap: var(--space-6);
+	}
+
+	.nav-link {
+		font-size: var(--font-size-utility);
+		font-weight: var(--font-weight-utility);
+		text-transform: uppercase;
+		letter-spacing: var(--letter-spacing-utility);
+		color: var(--color-fg-secondary);
+		text-decoration: none;
+		transition: color var(--transition-fast);
+		position: relative;
+	}
+
+	.nav-link:hover {
+		color: var(--color-fg);
+		text-decoration: none;
+	}
+
+	.nav-link.active {
+		color: var(--color-fg);
+	}
+
+	.nav-link.active::after {
+		content: '';
+		position: absolute;
+		bottom: -4px;
+		left: 0;
+		right: 0;
+		height: 1px;
+		background: var(--color-accent);
+	}
+
+	.contact-trigger {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-1);
+		padding: var(--space-2) var(--space-3);
+		font-size: var(--font-size-utility);
+		font-weight: var(--font-weight-utility);
+		text-transform: uppercase;
+		letter-spacing: var(--letter-spacing-utility);
+		font-family: inherit;
+		background: none;
+		border: var(--border-width-1) solid var(--color-border);
+		border-radius: var(--radius-md);
+		color: var(--color-fg);
+		cursor: pointer;
+		transition: border-color var(--transition-fast), color var(--transition-fast),
+			background var(--transition-fast), transform var(--transition-fast);
+		flex-shrink: 0;
+	}
+
+	.contact-trigger:hover {
+		border-color: var(--color-accent);
+	}
+
+	.contact-trigger:active {
+		transform: scale(0.97);
+	}
+
+	.contact-trigger-arrow {
+		width: var(--space-4);
+		height: var(--space-4);
+		transition: transform var(--transition-slow);
+	}
+
+	.contact-trigger[aria-expanded="true"] .contact-trigger-arrow {
+		transform: rotate(180deg);
+	}
+</style>
+
+<script is:inline>
+	(function () {
+		const trigger = document.querySelector('.contact-trigger');
+		if (!trigger) return;
+
+		trigger.addEventListener('click', () => {
+			const expanded = trigger.getAttribute('aria-expanded') === 'true';
+			trigger.setAttribute('aria-expanded', String(!expanded));
+			document.dispatchEvent(new CustomEvent('toggle-contact-drawer', {
+				detail: { open: !expanded }
+			}));
+		});
+	})();
+</script>

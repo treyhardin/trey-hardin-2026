@@ -1,0 +1,166 @@
+---
+import BaseLayout from '../../layouts/base.astro';
+import { getCaseStudyBySlug } from '../../lib/sanity';
+import { urlFor } from '../../lib/image';
+
+export async function getStaticPaths() {
+	const { getAllCaseStudies } = await import('../../lib/sanity');
+	const caseStudies = await getAllCaseStudies();
+
+	return caseStudies.map((study: any) => ({
+		params: { slug: study.slug.current },
+	}));
+}
+
+const slug = Astro.params.slug;
+const study = await getCaseStudyBySlug(slug);
+
+if (!study) {
+	return Astro.response = new Response('Not found', { status: 404 });
+}
+---
+
+<BaseLayout>
+	<article class="case-study">
+		<header class="case-study-header">
+			<div class="case-study-meta">
+				{study.client?.name && <span>{study.client.name}</span>}
+				{study.year && <span>{study.year}</span>}
+				{study.role && <span>{study.role}</span>}
+			</div>
+			<h1>{study.title}</h1>
+			{study.summary && <p class="case-study-summary">{study.summary}</p>}
+			{study.coverImage && (
+				<div class="case-study-cover">
+					<img
+						src={urlFor(study.coverImage).width(1400).auto('format').url()}
+						alt={study.title}
+					/>
+				</div>
+			)}
+		</header>
+
+		{study.body && (
+			<div class="case-study-body">
+				{study.body.map((block: any) => {
+					if (block._type === 'image') {
+						return (
+							<figure class="case-study-image">
+								<img
+									src={urlFor(block).width(1200).auto('format').url()}
+									alt={block.alt || ''}
+								/>
+							</figure>
+						);
+					}
+					if (block._type === 'block' && block.children) {
+						return <p>{block.children.map((child: any) => child.text).join('')}</p>;
+					}
+					return null;
+				})}
+			</div>
+		)}
+
+		{study.client?.website && (
+			<div class="case-study-cta">
+				<a href={study.client.website} target="_blank" rel="noopener">
+					Visit {study.client.name}'s website →
+				</a>
+			</div>
+		)}
+	</article>
+
+	<style>
+		.case-study {
+			padding: var(--page-margin);
+		}
+
+		.case-study-header {
+			margin-bottom: 4rem;
+		}
+
+		.case-study-meta {
+			display: flex;
+			gap: 1rem;
+			font-size: var(--font-size-sm);
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			font-family: var(--font-utility);
+			color: var(--color-text-muted);
+			margin-bottom: 1rem;
+		}
+
+		.case-study-meta span:not(:last-child)::after {
+			content: '·';
+			margin-left: 1rem;
+		}
+
+		.case-study-header h1 {
+			font-size: var(--font-size-4xl);
+			font-weight: 700;
+			letter-spacing: -0.02em;
+			line-height: 1.1;
+			margin-bottom: 1.5rem;
+		}
+
+		.case-study-summary {
+			font-size: var(--font-size-lg);
+			color: var(--color-text-muted);
+			line-height: 1.6;
+			max-width: 65ch;
+			margin-bottom: 3rem;
+		}
+
+		.case-study-cover {
+			width: 100%;
+			aspect-ratio: 16 / 9;
+			overflow: hidden;
+			border-radius: 4px;
+			background: var(--color-surface-raised);
+		}
+
+		.case-study-cover img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.case-study-body {
+			max-width: 65ch;
+		}
+
+		.case-study-body p {
+			margin-bottom: 1.5rem;
+			line-height: 1.7;
+			color: var(--color-text);
+		}
+
+		.case-study-image {
+			margin: 3rem 0;
+			width: 100%;
+			border-radius: 4px;
+			overflow: hidden;
+		}
+
+		.case-study-image img {
+			width: 100%;
+			display: block;
+		}
+
+		.case-study-cta {
+			margin-top: 4rem;
+			padding-top: 2rem;
+			border-top: 1px solid var(--color-border);
+		}
+
+		.case-study-cta a {
+			color: var(--color-accent);
+			text-decoration: none;
+			font-weight: 500;
+		}
+
+		.case-study-cta a:hover {
+			text-decoration: underline;
+		}
+	</style>
+</BaseLayout>

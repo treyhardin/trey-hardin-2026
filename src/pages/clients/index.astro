@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../../layouts/base.astro';
+import { getAllClients } from '../../lib/sanity';
+import { urlFor } from '../../lib/image';
+
+const clients = await getAllClients();
+---
+
+<BaseLayout>
+	<div class="constrained">
+		<section>
+			<h1 class="page-title">Clients</h1>
+			<p class="page-subtitle">Organizations I've partnered with over the years.</p>
+		</section>
+
+		{clients && clients.length > 0 ? (
+			<div class="clients-grid">
+				{clients.map((client) => (
+					<a
+						href={client.website || '#'}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="client-card card"
+						aria-label={`Visit ${client.name}${client.website ? ` website` : ''}`}
+					>
+						{client.logo && (
+							<div class="client-logo">
+								<img
+									src={urlFor(client.logo).width(200).auto('format').url()}
+									alt={`${client.name} logo`}
+									loading="lazy"
+								/>
+							</div>
+						)}
+						<h3>{client.name}</h3>
+						{client.description && <p>{client.description}</p>}
+					</a>
+				))}
+			</div>
+		) : (
+			<div class="empty-state">
+				<p>No clients added yet — add some in <a href="/admin" target="_blank">Sanity Studio</a>.</p>
+			</div>
+		)}
+	</div>
+
+	<style is:inline>
+		.page-title {
+			margin-bottom: var(--space-2);
+		}
+
+		.page-subtitle {
+			color: var(--color-fg-secondary);
+			margin-bottom: var(--space-16);
+			max-width: 40ch;
+		}
+
+		.clients-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+			gap: var(--space-4);
+		}
+
+		.client-card {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+			padding: var(--space-8) var(--space-4);
+			text-decoration: none;
+		}
+
+		.client-logo {
+			width: 8rem;
+			height: 8rem;
+			margin-bottom: var(--space-4);
+			display: grid;
+			place-items: center;
+		}
+
+		.client-logo img {
+			max-width: 100%;
+			max-height: 100%;
+			object-fit: contain;
+		}
+
+		.client-card h3 {
+			font-size: var(--font-size-h6);
+			margin-bottom: var(--space-1);
+		}
+
+		.client-card p {
+			color: var(--color-fg-secondary);
+			font-size: var(--font-size-body);
+		}
+
+		.empty-state {
+			padding: var(--space-16) 0;
+			text-align: center;
+			color: var(--color-fg-secondary);
+		}
+	</style>
+</BaseLayout>

@@ -1,0 +1,120 @@
+---
+import BaseLayout from '../../layouts/base.astro';
+import { getHomepage } from '../../lib/sanity';
+
+const homepage = await getHomepage();
+---
+
+<BaseLayout>
+	<div class="constrained">
+		<section>
+			<h1 class="page-title">About</h1>
+			<p class="page-subtitle">Design lead with 10+ years bridging creative, engineering, and brand across large-scale ecommerce.</p>
+		</section>
+
+		<section class="about-section">
+			{homepage?.bio?.map((block) => {
+				if (block._type === 'block') {
+					return <p class="bio-text">{block.children?.map(c => c.text).join('')}</p>;
+				}
+				return null;
+			})}
+		</section>
+
+		{homepage?.experience && (
+			<section class="about-section">
+				<h2 class="section-title">Experience</h2>
+				<div class="experience-list">
+					{homepage.experience.map((role) => (
+						<div class="experience-item">
+							<div class="experience-header">
+								<h3>{role.title}</h3>
+								<span class="meta">{role.company} — {role.period}</span>
+							</div>
+							{role.description && <p>{role.description}</p>}
+						</div>
+					))}
+				</div>
+			</section>
+		)}
+
+		{homepage?.skills && homepage.skills.length > 0 && (
+			<section class="about-section">
+				<h2 class="section-title">Capabilities</h2>
+				<div class="skills-grid">
+					{homepage.skills.map((skill) => (
+						<div class="skill-card card">
+							{skill.title && <h4>{skill.title}</h4>}
+							{skill.description && <p>{skill.description}</p>}
+						</div>
+					))}
+				</div>
+			</section>
+		)}
+	</div>
+
+	<style is:inline>
+		.page-title {
+			margin-bottom: var(--space-2);
+		}
+
+		.page-subtitle {
+			color: var(--color-fg-secondary);
+			margin-bottom: var(--space-16);
+			max-width: 40ch;
+		}
+
+		.about-section {
+			margin-bottom: var(--space-16);
+		}
+
+		.section-title {
+			margin-bottom: var(--space-8);
+			font-size: var(--font-size-h3);
+		}
+
+		.bio-text {
+			max-width: 65ch;
+			margin-bottom: var(--space-6);
+		}
+
+		.experience-list {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-8);
+		}
+
+		.experience-item {
+			padding-bottom: var(--space-8);
+			border-bottom: var(--border-width-1) solid var(--color-border);
+		}
+
+		.experience-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: var(--space-4);
+			margin-bottom: var(--space-2);
+		}
+
+		.experience-header h3 {
+			font-size: var(--font-size-h5);
+		}
+
+		.skills-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+			gap: var(--space-4);
+		}
+
+		.skill-card h4 {
+			font-size: var(--font-size-h6);
+			margin-bottom: var(--space-2);
+		}
+
+		.skill-card p {
+			color: var(--color-fg-secondary);
+			font-size: var(--font-size-body);
+		}
+	</style>
+</BaseLayout>

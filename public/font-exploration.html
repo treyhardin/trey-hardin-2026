@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Font Recommendations — Portfolio 2026</title>
+<style>
+  :root {
+    --color-bg: #fafafa;
+    --color-text: #1a1a1a;
+    --color-text-muted: #6b6b6b;
+    --color-accent: #000000;
+    --color-border: #e5e5e5;
+    --color-surface: #ffffff;
+    --page-margin: 2rem;
+    --max-page-width: 800px;
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 2rem;
+    --space-lg: 4rem;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--color-text);
+    background: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: var(--max-page-width);
+    margin: 0 auto;
+    padding: var(--space-lg) var(--page-margin);
+  }
+
+  h1 {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-md);
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-lg);
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    padding: var(--space-sm) var(--space-md);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .tab-btn:hover {
+    color: var(--color-text);
+  }
+
+  .tab-btn[aria-selected="true"] {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+    font-weight: 500;
+  }
+
+  /* Tab panels */
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel[aria-hidden="false"] {
+    display: block;
+  }
+
+  /* Font card layout */
+  .font-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .font-name {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .font-meta {
+    color: var(--color-text-muted);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .font-meta dt {
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .font-meta div + div {
+    margin-top: var(--space-xs);
+  }
+
+  /* Specimen image */
+  .specimen {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: var(--space-lg);
+  }
+
+  .specimen img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Weight range */
+  .weights {
+    margin-bottom: var(--space-lg);
+  }
+
+  .weights h3 {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-sm);
+  }
+
+  .weight-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .weight-chip {
+    font-size: 13px;
+    padding: 4px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    color: var(--color-text-muted);
+  }
+
+  /* Rationale */
+  .rationale {
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+  }
+
+  .rationale h3 {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-sm);
+  }
+
+  .rationale p {
+    margin-bottom: var(--space-sm);
+  }
+
+  .rationale p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Current font comparison */
+  .current {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+    font-size: 14px;
+    color: var(--color-text-muted);
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Font Recommendations</h1>
+
+    <div class="tabs" role="tablist">
+      <button class="tab-btn" role="tab" aria-selected="true" aria-hidden="false" data-tab="1">Aeonik Pro</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-hidden="true" data-tab="2">Helvetica Neue</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-hidden="true" data-tab="3">Suisse Intl</button>
+    </div>
+
+    <!-- Tab 1: Aeonik Pro -->
+    <div class="tab-panel" aria-hidden="false" role="tabpanel" data-panel="1">
+      <div class="font-header">
+        <div>
+          <div class="font-name">Aeonik Pro</div>
+        </div>
+        <dl class="font-meta">
+          <div><dt>Foundry</dt> Elliot &amp; Black</div>
+          <div><dt>Classification</dt> Neo-grotesque Sans Serif</div>
+          <div><dt>Weights</dt> 25 (UltraLight–Black + Italic)</div>
+          <div><dt>Vibe</dt> Clean, confident, understated</div>
+        </dl>
+      </div>
+
+      <div class="specimen">
+        <img src="/home/trumancreative/.hermes/cache/images/img_a2b903dba91a.png" alt="Aeonik Pro specimen" />
+      </div>
+
+      <div class="weights">
+        <h3>Weight Range</h3>
+        <div class="weight-list">
+          <span class="weight-chip">UltraLight 150</span>
+          <span class="weight-chip">Thin 200</span>
+          <span class="weight-chip">Light 300</span>
+          <span class="weight-chip">Regular 400</span>
+          <span class="weight-chip">Medium 500</span>
+          <span class="weight-chip">SemiBold 600</span>
+          <span class="weight-chip">Bold 700</span>
+          <span class="weight-chip">Heavy 800</span>
+          <span class="weight-chip">Black 900</span>
+        </div>
+      </div>
+
+      <div class="rationale">
+        <h3>Why Aeonik Pro</h3>
+        <p>Aeonik is the modern successor to the neo-grotesque tradition — designed by the team behind FF Meta and FF DIN. It carries the same clean authority but feels current, not archival. The 25-weight range gives you enormous typographic control across headings, body, and captions without switching families.</p>
+        <p>For a portfolio that needs to signal seniority without shouting, Aeonik Pro hits the register between Inter (too generic) and Agrandir (too expressive). It's the kind of typeface that says "I know what I'm doing" without trying.</p>
+        <p><strong>Pairing:</strong> Keep IBM Plex Mono for code/labels. Aeonik handles everything else.</p>
+      </div>
+    </div>
+
+    <!-- Tab 2: Helvetica Neue -->
+    <div class="tab-panel" aria-hidden="true" role="tabpanel" data-panel="2">
+      <div class="font-header">
+        <div>
+          <div class="font-name">Helvetica Neue</div>
+        </div>
+        <dl class="font-meta">
+          <div><dt>Foundry</dt> Linotype</div>
+          <div><dt>Classification</dt> Neo-grotesque Sans Serif</div>
+          <div><dt>Weights</dt> 41 (UltraLight–Black + Condensed + Italic)</div>
+          <div><dt>Vibe</dt> Authoritative, timeless, institutional</div>
+        </dl>
+      </div>
+
+      <div class="specimen">
+        <img src="/home/trumancreative/.hermes/cache/images/img_8776b27b7138.png" alt="Helvetica Neue specimen" />
+      </div>
+
+      <div class="weights">
+        <h3>Weight Range</h3>
+        <div class="weight-list">
+          <span class="weight-chip">UltraLight 100</span>
+          <span class="weight-chip">Thin 200</span>
+          <span class="weight-chip">Light 300</span>
+          <span class="weight-chip">Roman 400</span>
+          <span class="weight-chip">Medium 500</span>
+          <span class="weight-chip">Bold 700</span>
+          <span class="weight-chip">Heavy 900</span>
+          <span class="weight-chip">+ Condensed variants</span>
+        </div>
+      </div>
+
+      <div class="rationale">
+        <h3>Why Helvetica Neue</h3>
+        <p>The original neo-grotesque benchmark. Helvetica Neue isn't a safe choice — it's a statement. Using it on a portfolio signals you understand typography deeply enough to work with the font everyone knows but few use well.</p>
+        <p>The 41-weight library includes condensed variants, giving you tight, impactful headings without going to a separate display family. The UltraLight through Black range covers every role.</p>
+        <p><strong>Pairing:</strong> IBM Plex Mono stays. Helvetica Neue carries the entire visual weight of the site — no second display font needed.</p>
+      </div>
+    </div>
+
+    <!-- Tab 3: Suisse Intl -->
+    <div class="tab-panel" aria-hidden="true" role="tabpanel" data-panel="3">
+      <div class="font-header">
+        <div>
+          <div class="font-name">Suisse Intl</div>
+        </div>
+        <dl class="font-meta">
+          <div><dt>Foundry</dt> Swiss Typefaces</div>
+          <div><dt>Classification</dt> Neo-grotesque Sans Serif</div>
+          <div><dt>Weights</dt> 18 (Thin–Black + Italic)</div>
+          <div><dt>Vibe</dt> Contemporary Swiss, precise, editorial</div>
+        </dl>
+      </div>
+
+      <div class="specimen">
+        <img src="/home/trumancreative/.hermes/cache/images/img_10421cb5afdc.png" alt="Suisse Intl specimen" />
+      </div>
+
+      <div class="weights">
+        <h3>Weight Range</h3>
+        <div class="weight-list">
+          <span class="weight-chip">Thin 100</span>
+          <span class="weight-chip">UltraLight 200</span>
+          <span class="weight-chip">Light 300</span>
+          <span class="weight-chip">Book 400</span>
+          <span class="weight-chip">Medium 500</span>
+          <span class="weight-chip">SemiBold 600</span>
+          <span class="weight-chip">Bold 700</span>
+          <span class="weight-chip">Black 900</span>
+        </div>
+      </div>
+
+      <div class="rationale">
+        <h3>Why Suisse Intl</h3>
+        <p>Suisse is the font that every design tool chose for its own interface type. It's the neo-grotesque that feels like it was designed for screens — tight, precise, with a slightly narrower cut that packs more words per line without sacrificing readability.</p>
+        <p>For a portfolio that lives on the web, Suisse Intl's screen-optimized geometry is a practical advantage. The "Intl" version adds extended language support and slightly wider proportions that work better at small sizes.</p>
+        <p><strong>Pairing:</strong> IBM Plex Mono for code. Suisse Intl handles body and headings with equal authority.</p>
+      </div>
+    </div>
+
+    <div class="current">
+      <strong>Current:</strong> Inter + IBM Plex Mono — functional but generic. All three recommendations elevate the typographic voice while keeping the same clean, text-forward layout.
+    </div>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('[role="tab"]');
+    const panels = document.querySelectorAll('[role="tabpanel"]');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.tab;
+
+        tabs.forEach(t => {
+          t.setAttribute('aria-selected', 'false');
+          t.setAttribute('aria-hidden', 'true');
+        });
+        panels.forEach(p => {
+          p.setAttribute('aria-hidden', 'true');
+        });
+
+        tab.setAttribute('aria-selected', 'true');
+        tab.setAttribute('aria-hidden', 'false');
+        document.querySelector(`[data-panel="${target}"]`).setAttribute('aria-hidden', 'false');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,12 +1,14 @@
 ## Development
 
-When starting the dev server, use background mode:
+When starting the dev server, use background mode with `--host` so it binds to all interfaces (not just IPv6 localhost):
 
 ```
-astro dev --background
+astro dev --host --background
 ```
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
+
+Without `--host`, the server binds to `[::1]:4321` only, which is unreachable from other machines on the network.
 
 ## Documentation
 

@@ -1,0 +1,369 @@
+---
+import BaseLayout from '../../layouts/base.astro';
+import { getBlogPostBySlug } from '../../lib/sanity';
+import { urlFor } from '../../lib/image';
+
+export async function getStaticPaths() {
+	const { getAllBlogPosts } = await import('../../lib/sanity');
+	const posts = await getAllBlogPosts();
+
+	return posts.map((post: any) => ({
+		params: { slug: post.slug.current },
+	}));
+}
+
+const slug = Astro.params.slug;
+const post = await getBlogPostBySlug(slug);
+
+if (!post) {
+	return Astro.response = new Response('Not found', { status: 404 });
+}
+
+// Portable Text block renderer
+// Decouple HTML semantics from visual styling:
+// Blog post title is the real <h1>, so everything inside
+// the rich content body shifts down one level.
+//   Sanity H1 → <h2 class="rt-h1">
+//   Sanity H2 → <h3 class="rt-h2">
+//   … and so on.
+// The class carries the visual weight; the tag carries the semantics.
+
+const HEADING_MAP: Record<string, string> = {
+	h1: 'h2',
+	h2: 'h3',
+	h3: 'h4',
+	h4: 'h5',
+	h5: 'h6',
+	h6: 'h6',
+};
+
+function renderBlock(block: any) {
+	const tag = block.style === 'normal' || !block.style
+		? 'p'
+		: HEADING_MAP[block.style] ?? block.style;
+
+	const children = block.children.map((child: any) => renderChild(child, block)).join('');
+
+	return `<${tag} class="rt-${block.style || 'normal'}">${children}</${tag}>`;
+}
+
+// Inline marks renderer
+function renderChild(child: any, block: any) {
+	let text = child.text || '';
+	const marks = child.marks || [];
+
+	if (marks.includes('code')) {
+		text = `<code>${text}</code>`;
+	}
+	if (marks.includes('em')) {
+		text = `<em>${text}</em>`;
+	}
+	if (marks.includes('strong')) {
+		text = `<strong>${text}</strong>`;
+	}
+	if (marks.includes('strike_through')) {
+		text = `<del>${text}</del>`;
+	}
+	if (marks.includes('link')) {
+		const linkMarks = block.markDefs?.filter((m: any) => m._type === 'link');
+		const linkIndex = marks.filter(m => m !== 'link').length;
+		const href = linkMarks?.[Math.min(linkIndex, linkMarks.length - 1)]?.href || '#';
+		text = `<a href="${href}" target="_blank" rel="noopener">${text}</a>`;
+	}
+
+	return text;
+}
+
+// We need access to markDefs, so wrap the renderer
+function renderBody(body: any[]) {
+	let html = '';
+	let i = 0;
+	
+	while (i < body.length) {
+		const block = body[i];
+		
+		if (block._type === 'image') {
+			html += `<figure class="rt-image"><img src="${urlFor(block).width(1200).auto('format').url()}" alt="${block.alt || ''}" /></figure>`;
+			i++;
+			continue;
+		}
+		
+		if (block._type === 'block' && block.children) {
+			// Handle list items by grouping consecutive items
+			if (block.listItem) {
+				const listType = block.listItem === 'number' ? 'ol' : 'ul';
+				html += `<${listType} class="rt-${listType}">`;
+				
+				// Consume all consecutive list items of the same type
+				while (i < body.length && body[i]._type === 'block' && body[i].listItem === block.listItem) {
+					const item = body[i];
+					const children = item.children.map((child: any) => {
+						let text = child.text || '';
+						const marks = child.marks || [];
+						if (marks.includes('code')) text = `<code>${text}</code>`;
+						if (marks.includes('em')) text = `<em>${text}</em>`;
+						if (marks.includes('strong')) text = `<strong>${text}</strong>`;
+						if (marks.includes('strike_through')) text = `<del>${text}</del>`;
+						return text;
+					}).join('');
+					html += `<li>${children}</li>`;
+					i++;
+				}
+				html += `</${listType}>`;
+				continue;
+			}
+			
+			// Handle horizontal rules (empty blocks)
+			if (block.children.length === 0) {
+				html += `<hr class="rt-hr" />`;
+				i++;
+				continue;
+			}
+			
+			const tag = block.style === 'normal' || !block.style ? 'p' : HEADING_MAP[block.style] || block.style;
+			const children = block.children.map((child: any) => {
+				let text = child.text || '';
+				const marks = child.marks || [];
+				if (marks.includes('code')) text = `<code>${text}</code>`;
+				if (marks.includes('em')) text = `<em>${text}</em>`;
+				if (marks.includes('strong')) text = `<strong>${text}</strong>`;
+				if (marks.includes('strike_through')) text = `<del>${text}</del>`;
+				if (marks.includes('link')) {
+					const linkMarks = block.markDefs?.filter((m: any) => m._type === 'link');
+					const linkIndex = marks.filter(m => m !== 'link').length;
+					const href = linkMarks?.[Math.min(linkIndex, linkMarks.length - 1)]?.href || '#';
+					text = `<a href="${href}" target="_blank" rel="noopener">${text}</a>`;
+				}
+				return text;
+			}).join('');
+			html += `<${tag} class="rt-${block.style || 'normal'}">${children}</${tag}>`;
+			i++;
+		} else {
+			i++;
+		}
+	}
+	return html;
+}
+
+const bodyHtml = renderBody(post.body || []);
+---
+
+<BaseLayout>
+	<article class="blog-post">
+		<header class="blog-post-header">
+			{post.publishedAt && (
+				<time class="blog-post-date" datetime={post.publishedAt}>
+					{new Date(post.publishedAt).toLocaleDateString('en-US', {
+						year: 'numeric',
+						month: 'long',
+						day: 'numeric',
+					})}
+				</time>
+			)}
+			<h1>{post.title}</h1>
+			{post.excerpt && <p class="blog-post-excerpt">{post.excerpt}</p>}
+			{post.coverImage && (
+				<div class="blog-post-cover">
+					<img
+						src={urlFor(post.coverImage).width(1400).auto('format').url()}
+						alt={post.title}
+					/>
+				</div>
+			)}
+		</header>
+
+		{post.body && (
+			<div class="blog-post-body" set:html={bodyHtml}></div>
+		)}
+
+		<div class="blog-post-footer">
+			<a href="/blog">← Back to all posts</a>
+		</div>
+	</article>
+
+	<style>
+		.blog-post {
+			padding: var(--page-margin);
+		}
+
+		.blog-post-header {
+			margin-bottom: 4rem;
+		}
+
+		.blog-post-date {
+			font-size: var(--font-size-sm);
+			font-family: var(--font-utility);
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			color: var(--color-text-muted);
+			margin-bottom: 1rem;
+			display: block;
+		}
+
+		.blog-post-header h1 {
+			margin-bottom: var(--space-3);
+		}
+
+		.blog-post-excerpt {
+			color: var(--color-fg-secondary);
+			max-width: 65ch;
+			margin-bottom: var(--space-12);
+		}
+
+		.blog-post-cover {
+			width: 100%;
+			aspect-ratio: 16 / 9;
+			overflow: hidden;
+			border-radius: var(--radius-md);
+			background: var(--color-bg-secondary);
+		}
+
+		.blog-post-cover img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		/* ── Rich content body ── */
+		/* All type styles inherit global font-size, letter-spacing, and line-height
+		   from base.astro tag selectors. We only override font-size per class to
+		   restore visual weight after the semantic shift (h1→h2, h2→h3, etc.).
+		   Margin-bottom is RTE-specific for vertical rhythm. */
+
+		:global(.blog-post-body) {
+			max-width: 65ch;
+		}
+
+		:global(.blog-post-body > *) {
+			margin-bottom: var(--space-5);
+		}
+
+		/* Headings — font-size only; everything else from global tag selectors */
+		:global(.rt-h1) { font-size: var(--font-size-h1); margin-top: var(--space-12); margin-bottom: var(--space-3); }
+		:global(.rt-h2) { font-size: var(--font-size-h2); margin-top: var(--space-10); margin-bottom: var(--space-3); }
+		:global(.rt-h3) { font-size: var(--font-size-h3); margin-top: var(--space-8);  margin-bottom: var(--space-2); }
+		:global(.rt-h4) { font-size: var(--font-size-h4); margin-top: var(--space-8);  margin-bottom: var(--space-2); }
+		:global(.rt-h5) { font-size: var(--font-size-h5); margin-top: var(--space-6);  margin-bottom: var(--space-2); }
+		:global(.rt-h6) { font-size: var(--font-size-h6); margin-top: var(--space-6);  margin-bottom: var(--space-2); }
+
+		/* Blockquote */
+		:global(.rt-blockquote),
+		:global(.blog-post-body blockquote) {
+			border-left: var(--border-width-1) solid var(--color-accent);
+			padding-left: var(--space-5);
+			margin: var(--space-6) 0;
+			font-style: italic;
+			color: var(--color-fg-secondary);
+		}
+
+		/* Lists */
+		:global(.rt-ul),
+		:global(.rt-ol) {
+			margin: var(--space-5) 0;
+			padding-left: var(--space-6);
+		}
+
+		:global(.rt-ul li) {
+			list-style-type: disc;
+			margin-bottom: var(--space-2);
+			padding-left: var(--space-1);
+		}
+
+		:global(.rt-ul li:last-child) {
+			margin-bottom: 0;
+		}
+
+		:global(.rt-ol li) {
+			list-style-type: decimal;
+			margin-bottom: var(--space-2);
+			padding-left: var(--space-1);
+		}
+
+		:global(.rt-ol li:last-child) {
+			margin-bottom: 0;
+		}
+
+		/* Horizontal rule */
+		:global(.rt-hr) {
+			border: none;
+			border-top: var(--border-width-1) solid var(--color-border);
+			margin: var(--space-10) 0;
+		}
+
+		/* Inline code */
+		:global(.blog-post-body code) {
+			font-family: var(--font-mono);
+			font-size: 0.875em;
+			background: var(--color-bg-secondary);
+			padding: 0.15em 0.4em;
+			border-radius: var(--radius-sm);
+		}
+
+		/* Code block */
+		:global(.rt-code) {
+			font-family: var(--font-mono);
+			background: var(--color-bg-secondary);
+			padding: var(--space-5) var(--space-6);
+			border-radius: var(--radius-md);
+			overflow-x: auto;
+			margin: var(--space-6) 0;
+			border: var(--border-width-1) solid var(--color-border);
+		}
+
+		:global(.rt-code code) {
+			background: none;
+			padding: 0;
+			border-radius: 0;
+		}
+
+		/* Inline marks */
+		:global(.blog-post-body strong) {
+			font-weight: var(--font-weight-bold);
+		}
+
+		:global(.blog-post-body del) {
+			text-decoration: line-through;
+			color: var(--color-fg-secondary);
+		}
+
+		:global(.blog-post-body a) {
+			color: var(--color-accent);
+			text-decoration: underline;
+			text-underline-offset: var(--space-1);
+		}
+
+		:global(.blog-post-body a:hover) {
+			text-decoration-thickness: 2px;
+		}
+
+		/* Images */
+		:global(.rt-image) {
+			margin: var(--space-10) 0;
+			width: 100%;
+			border-radius: var(--radius-md);
+			overflow: hidden;
+		}
+
+		:global(.rt-image img) {
+			width: 100%;
+			display: block;
+		}
+
+		/* Footer */
+		.blog-post-footer {
+			margin-top: 4rem;
+			padding-top: 2rem;
+			border-top: 1px solid var(--color-border);
+		}
+
+		.blog-post-footer a {
+			color: var(--color-accent);
+			text-decoration: none;
+			font-weight: 500;
+		}
+
+		.blog-post-footer a:hover {
+			text-decoration: underline;
+		}
+	</style>
+</BaseLayout>
