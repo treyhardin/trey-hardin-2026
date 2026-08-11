@@ -5,6 +5,7 @@ import { VisualEditingComponent as VisualEditing } from '@sanity/astro/visual-ed
 import { perspectiveCookieName } from '@sanity/preview-url-secret/constants';
 
 const draftMode = Astro.cookies.has(perspectiveCookieName);
+const enableVisualEditing = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === 'true';
 ---
 
 <!doctype html>
@@ -1055,6 +1056,8 @@ const draftMode = Astro.cookies.has(perspectiveCookieName);
 			});
 		})();
 	</script>
-	<VisualEditing client:only="react" />
+	{enableVisualEditing && (
+		<VisualEditing client:only="react" />
+	)}
 </body>
 </html>

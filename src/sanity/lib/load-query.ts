@@ -2,6 +2,7 @@ import type { ClientPerspective, QueryParams } from '@sanity/client';
 import { sanityClient } from 'sanity:client';
 
 const token = import.meta.env.SANITY_API_READ_TOKEN;
+const enableVisualEditing = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === 'true';
 
 function parsePerspective(
 	raw: string | undefined,
@@ -44,8 +45,8 @@ export async function loadQuery<QueryResponse>({
 		{
 			filterResponse: false,
 			perspective,
-			resultSourceMap: 'withKeyArraySelector',
-			stega: true,
+			resultSourceMap: enableVisualEditing ? 'withKeyArraySelector' : undefined,
+			stega: enableVisualEditing,
 			...(draftMode ? { token } : {}),
 		},
 	);
