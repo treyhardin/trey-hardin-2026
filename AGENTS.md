@@ -47,7 +47,7 @@ PATH="/home/trumancreative/.local/bin:$PATH" npx astro build
 
 ## Sanity CMS Integration
 
-**Status:** ✅ All systems operational. Visual editing + Presentation tool working on staging.
+**Status:** ✅ All systems operational. Visual editing + Presentation tool working on staging. Header singleton published with navigation links (Work, About, Writing, Clients).
 
 ### Architecture
 - All GROQ queries route through `src/sanity/lib/load-query.ts` which accepts a `perspective` parameter (`'previewDrafts' | 'drafts' | 'published' | undefined`)
