@@ -7,6 +7,12 @@ import { defineLocations } from 'sanity/presentation';
  */
 export const resolve = {
   documents: {
+    header: defineLocations({
+      select: { title: 'links.text' },
+      resolve: (doc) => ({
+        locations: [{ title: 'Header Settings', href: '/' }],
+      }),
+    }),
     homepage: defineLocations({
       select: { title: 'headline' },
       resolve: (doc) => ({

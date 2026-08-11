@@ -1,11 +1,12 @@
 ---
 import Header from '../components/Header.astro';
 import ContactDrawer from '../components/ContactDrawer.astro';
+import { getHeader } from '../lib/sanity';
 import { VisualEditingComponent as VisualEditing } from '@sanity/astro/visual-editing/component';
 import { perspectiveCookieName } from '@sanity/preview-url-secret/constants';
 
-const draftMode = Astro.cookies.has(perspectiveCookieName);
 const enableVisualEditing = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === 'true';
+const header = await getHeader();
 ---
 
 <!doctype html>
@@ -759,7 +760,7 @@ const enableVisualEditing = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED
 </head>
 
 <body>
-	<Header />
+	<Header navLinks={header?.navLinks} />
 	<ContactDrawer />
 
 	<main class="container">

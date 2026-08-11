@@ -1,18 +1,22 @@
 ---
 // Header: sticky top bar with name, nav links, and contact trigger
+// Accepts optional `navLinks` prop from Sanity; falls back to hardcoded defaults.
 const currentPath = Astro.url.pathname;
 
 interface NavLink {
 	label: string;
 	href: string;
+	openInNewTab?: boolean;
 }
 
-const navLinks: NavLink[] = [
+const defaultNavLinks: NavLink[] = [
 	{ label: 'Work', href: '/work' },
 	{ label: 'About', href: '/about' },
 	{ label: 'Writing', href: '/blog' },
 	{ label: 'Clients', href: '/clients' },
 ];
+
+const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 ---
 
 <header class="site-header">

@@ -6,6 +6,7 @@ import { DocumentIcon } from '@sanity/icons/Document';
 import { DocumentTextIcon } from '@sanity/icons/DocumentText';
 import { UsersIcon } from '@sanity/icons/Users';
 import { EditIcon } from '@sanity/icons/Edit';
+import { LinkIcon } from '@sanity/icons/Link';
 import { structure } from './sanity.structure';
 import { resolve } from './src/lib/resolve';
 
@@ -15,6 +16,55 @@ const previewUrlSecret = import.meta.env.SANITY_PREVIEW_URL_SECRET;
 // does not inherit Astro's import.meta.env vars.
 const PROJECT_ID = 'vs8d5hbw';
 const DATASET = 'production';
+
+// ── Reusable: Link Object ──
+// A single link with text, URL (relative or absolute), and optional new-tab behavior.
+const linkObject = defineType({
+	name: 'link',
+	title: 'Link',
+	type: 'object',
+	fields: [
+		defineField({
+			name: 'text',
+			title: 'Text',
+			type: 'string',
+			description: 'Label shown to the user',
+			validation: (rule) => rule.required(),
+		}),
+		defineField({
+			name: 'url',
+			title: 'URL',
+			type: 'string',
+			description: 'Link destination — relative (/work) or absolute (https://…)',
+			validation: (rule) => rule.required(),
+		}),
+		defineField({
+			name: 'openInNewTab',
+			title: 'Open in new tab',
+			type: 'boolean',
+			initialValue: false,
+		}),
+	],
+	preview: {
+		select: {
+			title: 'text',
+			subtitle: 'url',
+		},
+		prepare({ title, subtitle }) {
+			return { title, subtitle };
+		},
+	},
+});
+
+// ── Reusable: Link List ──
+// An orderable array of link objects. At least one link is required.
+const linkList = defineType({
+	name: 'linkList',
+	title: 'Link List',
+	type: 'array',
+	of: [defineArrayMember({ type: 'link' })],
+	validation: (rule) => rule.min(1).error('At least one link is required'),
+});
 
 export default defineConfig({
 	name: 'portfolio-2026',
@@ -48,6 +98,33 @@ export default defineConfig({
 
 	schema: {
 		types: [
+			// ── Header (Singleton) ──
+			defineType({
+				name: 'header',
+				title: 'Header',
+				type: 'document',
+				icon: LinkIcon,
+				fields: [
+					defineField({
+						name: 'links',
+						title: 'Navigation Links',
+						type: 'linkList',
+						description: 'Orderable list of header navigation links',
+					}),
+				],
+				preview: {
+					select: {
+						title: 'links.text',
+					},
+					prepare({ title }) {
+						return {
+							title: 'Header Settings',
+							subtitle: Array.isArray(title) ? `${title.length} link${title.length !== 1 ? 's' : ''}` : 'No links',
+						};
+					},
+				},
+			}),
+
 			// ── Homepage (Singleton) ──
 			defineType({
 				name: 'homepage',
@@ -233,7 +310,7 @@ export default defineConfig({
 					prepare({ title, subtitle, media }) {
 						return { title, subtitle, media };
 					},
-					},
+						},
 				}),
 
 				// ── Blog Post ──
@@ -306,7 +383,11 @@ export default defineConfig({
 							};
 						},
 					},
-					}),
-					],
-					},
-					});
+				}),
+
+			// ── Reusable types ──
+			linkObject,
+			linkList,
+			],
+		},
+	});
