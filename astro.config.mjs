@@ -11,6 +11,15 @@ const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET, SANITY_PREVIEW_URL_SECR
 	'',
 );
 
+// Debug: log env vars at build time
+console.log('[SANITY CONFIG] Build-time env check:');
+console.log('  PUBLIC_SANITY_PROJECT_ID:', PUBLIC_SANITY_PROJECT_ID);
+console.log('  PUBLIC_SANITY_DATASET:', PUBLIC_SANITY_DATASET);
+console.log('  PUBLIC_SANITY_VISUAL_EDITING_ENABLED:', process.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED);
+console.log('  SANITY_API_READ_TOKEN:', process.env.SANITY_API_READ_TOKEN ? '✅ present' : '❌ missing');
+console.log('  SANITY_STUDIO_URL:', SANITY_STUDIO_URL || '❌ missing (using localhost fallback)');
+console.log('  SANITY_PREVIEW_URL_SECRET:', SANITY_PREVIEW_URL_SECRET ? '✅ present' : '❌ missing');
+
 export default defineConfig({
 	output: 'server',
 	adapter: cloudflare(),
