@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import { loadEnv } from 'vite';
 import react from '@astrojs/react';
 import sanity from '@sanity/astro';
+import cloudflare from '@astrojs/cloudflare';
 import node from '@astrojs/node';
 
 const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET, SANITY_PREVIEW_URL_SECRET, SANITY_STUDIO_URL, PUBLIC_SANITY_VISUAL_EDITING_ENABLED } = loadEnv(
@@ -11,21 +12,19 @@ const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET, SANITY_PREVIEW_URL_SECR
 	'',
 );
 
-// Hybrid rendering: static by default, SSR only when visual editing is enabled.
+// Visual editing toggle (case-insensitive)
 const enableVisualEditing = PUBLIC_SANITY_VISUAL_EDITING_ENABLED?.toLowerCase() === 'true';
 
 // Adapter selection:
-// - Static mode: no adapter needed (pure static files)
-// - SSR + local dev: @astrojs/node (avoids Miniflare OOM on Pi)
-// - SSR + production/staging: @astrojs/cloudflare
+// - Production: @astrojs/cloudflare (Workers deployment target)
+// - Local dev: @astrojs/node (avoids Miniflare OOM on Pi)
 const isProduction = process.env.NODE_ENV === 'production';
-const adapter = enableVisualEditing
-	? isProduction
-		? (await import('@astrojs/cloudflare')).default()
-		: node({ mode: 'standalone' })
-	: undefined;
+const adapter = isProduction
+	? cloudflare()
+	: node({ mode: 'standalone' });
 
 export default defineConfig({
+	// Static by default. SSR only when visual editing is enabled.
 	output: enableVisualEditing ? 'server' : 'static',
 	adapter,
 	integrations: [
