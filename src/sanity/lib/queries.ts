@@ -29,7 +29,7 @@ export const CLIENTS_QUERY = defineQuery(`*[_type == "client"] | order(name asc)
 }`);
 
 export const HEADER_QUERY = defineQuery(`*[_type == "header"][0]{
-  links[]{text, url, openInNewTab}
+  links[]{"label": text, "href": url, openInNewTab}
 }`);
 
 export const ABOUT_QUERY = defineQuery(`*[_type == "homepage"][0].aboutSection`);
