@@ -32,4 +32,9 @@ export const HEADER_QUERY = defineQuery(`*[_type == "header"][0]{
   links[]{"label": text, "href": url, openInNewTab}
 }`);
 
+export const FOOTER_QUERY = defineQuery(`*[_type == "footer"][0]{
+  links[]{"label": text, "href": url, openInNewTab},
+  copyright
+}`);
+
 export const ABOUT_QUERY = defineQuery(`*[_type == "homepage"][0].aboutSection`);

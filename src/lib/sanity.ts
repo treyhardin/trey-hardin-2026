@@ -1,6 +1,6 @@
 import { createClient } from '@sanity/client';
 import { loadQuery } from '../sanity/lib/load-query';
-import { HOMEPAGE_QUERY, CASE_STUDIES_QUERY, CASE_STUDY_QUERY, CLIENTS_QUERY, BLOG_POSTS_QUERY, BLOG_POST_QUERY, HEADER_QUERY } from '../sanity/lib/queries';
+import { HOMEPAGE_QUERY, CASE_STUDIES_QUERY, CASE_STUDY_QUERY, CLIENTS_QUERY, BLOG_POSTS_QUERY, BLOG_POST_QUERY, HEADER_QUERY, FOOTER_QUERY } from '../sanity/lib/queries';
 
 /**
  * Plain Sanity client for image URL building (urlFor helper).
@@ -60,4 +60,11 @@ export async function getBlogPostBySlug(slug: string, perspectiveCookie?: string
  */
 export async function getHeader(perspectiveCookie?: string) {
 	return (await loadQuery({ query: HEADER_QUERY, perspectiveCookie })).data;
+}
+
+/**
+ * Fetch the footer singleton document containing links and copyright text.
+ */
+export async function getFooter(perspectiveCookie?: string) {
+	return (await loadQuery({ query: FOOTER_QUERY, perspectiveCookie })).data;
 }

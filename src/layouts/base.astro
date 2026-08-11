@@ -1,12 +1,13 @@
 ---
 import Header from '../components/Header.astro';
 import ContactDrawer from '../components/ContactDrawer.astro';
-import { getHeader } from '../lib/sanity';
+import { getHeader, getFooter } from '../lib/sanity';
 import { VisualEditingComponent as VisualEditing } from '@sanity/astro/visual-editing/component';
 import { perspectiveCookieName } from '@sanity/preview-url-secret/constants';
 
 const enableVisualEditing = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === 'true';
 const header = await getHeader();
+const footer = await getFooter();
 ---
 
 <!doctype html>
@@ -489,6 +490,12 @@ const header = await getHeader();
 			color: var(--color-fg);
 		}
 
+		footer .copyright {
+			margin-top: var(--space-6);
+			color: var(--color-fg-secondary);
+			font-size: var(--font-size-body);
+		}
+
 		/* ── Tweak System ── */
 		.tweak-toggle {
 			position: fixed;
@@ -769,10 +776,15 @@ const header = await getHeader();
 
 	<footer class="container">
 		<nav>
-			<a href="mailto:hello@treyhardin.com">Email</a>
-			<a href="https://linkedin.com/in/treyhardin" target="_blank" rel="noopener">LinkedIn</a>
-			<a href="https://x.com/treyhardin" target="_blank" rel="noopener">Twitter</a>
+			{footer?.links?.map((link) => (
+				<a href={link.href} {link.openInNewTab ? `target="_blank" rel="noopener"` : ''}>
+					{link.label}
+				</a>
+			))}
 		</nav>
+		{footer?.copyright && (
+			<p class="copyright">{footer.copyright}</p>
+		)}
 	</footer>
 
 	<!-- Tweak System: Gear button → menu → drawer panels -->

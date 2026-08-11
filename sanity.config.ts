@@ -125,6 +125,41 @@ export default defineConfig({
 				},
 			}),
 
+			// ── Footer (Singleton) ──
+			defineType({
+				name: 'footer',
+				title: 'Footer',
+				type: 'document',
+				icon: LinkIcon,
+				fields: [
+					defineField({
+						name: 'links',
+						title: 'Footer Links',
+						type: 'linkList',
+						description: 'Orderable list of footer links',
+					}),
+					defineField({
+						name: 'copyright',
+						title: 'Copyright Text',
+						type: 'text',
+						rows: 2,
+						description: 'Copyright notice shown at the bottom of every page',
+					}),
+				],
+				preview: {
+					select: {
+						title: 'links.text',
+						subtitle: 'copyright',
+					},
+					prepare({ title, subtitle }) {
+						return {
+							title: 'Footer Settings',
+							subtitle: subtitle || (Array.isArray(title) ? `${title.length} link${title.length !== 1 ? 's' : ''}` : 'No links'),
+						};
+					},
+				},
+			}),
+
 			// ── Homepage (Singleton) ──
 			defineType({
 				name: 'homepage',

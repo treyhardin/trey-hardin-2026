@@ -20,6 +20,17 @@ export const structure: StructureResolver = (S) =>
 						.title('Header Settings'),
 				),
 
+			// 1b. Singleton — Footer
+			S.listItem()
+				.title('Footer')
+				.icon(LinkIcon)
+				.child(
+					S.document()
+						.schemaType('footer')
+						.documentId('footer')
+						.title('Footer Settings'),
+				),
+
 			// 2. Singleton — Homepage
 			S.listItem()
 				.title('Homepage')
