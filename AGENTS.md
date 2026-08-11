@@ -10,15 +10,44 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
 
 Without `--host`, the server binds to `[::1]:4321` only, which is unreachable from other machines on the network.
 
-### Dual Adapter Setup
+Node 22+ is required. Use `~/.local/bin/node` on the Pi (nvm has v20 which is too old):
+```
+PATH="/home/trumancreative/.local/bin:$PATH" npx astro build
+```
 
-- **Local dev (`astro dev`):** Uses `@astrojs/node` adapter — avoids Miniflare entirely, runs fine on the Pi.
-- **Production builds (Cloudflare Pages):** Uses `@astrojs/cloudflare` adapter — `NODE_ENV=production` triggers the cloudflare adapter automatically.
-- The adapter swap is handled in `astro.config.mjs` via `isProduction` check.
+## Hybrid Rendering
+
+**Strategy:** Static by default, SSR only when `PUBLIC_SANITY_VISUAL_EDITING_ENABLED=true`.
+
+**Deployment target:** Cloudflare Workers (Pages deprecated). `@astrojs/cloudflare` adapter always used in production.
+
+### How it works (`astro.config.mjs`)
+- Reads `PUBLIC_SANITY_VISUAL_EDITING_ENABLED` at build time via `loadEnv`
+- When `'true'` (case-insensitive): `output: 'server'` + cloudflare adapter → SSR on Workers
+- When unset or anything else: `output: 'static'` + cloudflare adapter → static files served through Worker
+- Local dev always uses `@astrojs/node` (avoids Miniflare OOM on Pi)
+
+### Production (static)
+- All pages prerendered at build time from published Sanity content
+- Cloudflare adapter still present (Workers always needs it) — serves static assets
+- Sanity Studio at `/admin` is NOT available (not needed on production)
+- Draft mode endpoints at `/api/draft-mode/*` do not exist (no server routes)
+- Stega data bakes into HTML at build time (harmless when no Studio is reachable)
+
+### Staging (SSR + visual editing)
+- Set `PUBLIC_SANITY_VISUAL_EDITING_ENABLED=true` in Workers env vars
+- `output: 'server'` with `@astrojs/cloudflare` adapter
+- `/admin` Studio served by the adapter
+- Draft mode cookies, perspective switching, visual editing overlays all work
+- `getStaticPaths()` is ignored in SSR mode — pages render on each request
+
+### Build notes
+- SSR builds on Pi: OOM crash from Miniflare (expected — builds run on Cloudflare infra)
+- `Astro.request.headers` warnings in static mode are from Sanity stega — harmless
 
 ## Sanity CMS Integration
 
-**Status:** All pages return HTTP 200. Studio loads at `/admin`. Presentation tool loads but shows "Unable to connect" in the preview iframe — **active blocker**.
+**Status:** Static build works locally. Ready to test staging deployment with visual editing.
 
 ### Architecture
 - All GROQ queries route through `src/sanity/lib/load-query.ts` which accepts a `perspective` parameter (`'previewDrafts' | 'drafts' | 'published' | undefined`)
@@ -32,13 +61,11 @@ Without `--host`, the server binds to `[::1]:4321` only, which is unreachable fr
 - **`SANITY_API_READ_TOKEN`** in `.env` — required for draft queries (read-only token)
 - **`SANITY_PREVIEW_URL_SECRET`** in `.env` — secures draft mode toggle endpoints
 - **`previewUrlSecret`** injected into Astro config via `loadEnv` + Sanity plugin config
-- **Output:** `server` (required for draft mode cookie detection)
 
-### Visual Editing Status
-- **Confirmed working on staging** (`https://staging.treyhardin.com`)
-- `PUBLIC_SANITY_VISUAL_EDITING_ENABLED` must be lowercase `'true'` at build time
-- `load-query.ts` uses case-insensitive runtime check (`.toLowerCase() === 'true'`)
-- `stega.studioUrl` reads from `SANITY_STUDIO_URL` env var with localhost fallback
+### Draft Mode Endpoints
+- `src/pages/api/draft-mode/enable.ts` — validates secret, sets `sanity-preview-perspective` cookie, redirects
+- `src/pages/api/draft-mode/disable.ts` — clears cookie, redirects
+- Only exist in SSR mode (staging with visual editing enabled)
 
 ### Import Path Rules
 - From `src/pages/`: use `../lib/`, `../layouts/`, `../sanity/lib/`
