@@ -17,7 +17,7 @@ const posts = await getAllBlogPosts(perspectiveCookie);
 
 		<div class="blog-grid">
 			{posts.map((post: any) => (
-				<a href={`/blog/${post.slug.current}`} class="blog-card">
+				<a href={`/blog/${post.slug}`} class="blog-card">
 					{post.coverImage && (
 						<div class="blog-card-image">
 							<img
