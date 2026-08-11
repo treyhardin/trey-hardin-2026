@@ -40,6 +40,8 @@ export default defineConfig({
 			allowOrigins: [
 				'http://localhost:4321',
 				'http://100.88.85.21:4321',
+				'https://trey-hardin-2026.pages.dev',
+				'https://staging.treyhardin.com',
 			],
 		}, { previewUrlSecret }),
 	],

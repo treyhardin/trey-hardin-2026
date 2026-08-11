@@ -5,7 +5,7 @@ import react from '@astrojs/react';
 import sanity from '@sanity/astro';
 import cloudflare from '@astrojs/cloudflare';
 
-const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET, SANITY_PREVIEW_URL_SECRET } = loadEnv(
+const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET, SANITY_PREVIEW_URL_SECRET, SANITY_STUDIO_URL } = loadEnv(
 	process.env.NODE_ENV ?? 'development',
 	process.cwd(),
 	'',
@@ -24,7 +24,7 @@ export default defineConfig({
 			studioBasePath: '/admin',
 			studioRouterHistory: 'hash',
 			stega: {
-				studioUrl: 'http://localhost:4321/admin',
+				studioUrl: SANITY_STUDIO_URL || 'http://localhost:4321/admin',
 			},
 			previewUrlSecret: SANITY_PREVIEW_URL_SECRET,
 		}),

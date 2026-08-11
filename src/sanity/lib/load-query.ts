@@ -2,7 +2,7 @@ import type { ClientPerspective, QueryParams } from '@sanity/client';
 import { sanityClient } from 'sanity:client';
 
 const token = import.meta.env.SANITY_API_READ_TOKEN;
-const enableVisualEditing = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === 'true';
+const enableVisualEditing = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED?.toLowerCase() === 'true';
 
 function parsePerspective(
 	raw: string | undefined,
