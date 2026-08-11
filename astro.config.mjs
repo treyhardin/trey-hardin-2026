@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import { loadEnv } from 'vite';
 import react from '@astrojs/react';
 import sanity from '@sanity/astro';
-import node from '@astrojs/node';
+import cloudflare from '@astrojs/cloudflare';
 
 const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET, SANITY_PREVIEW_URL_SECRET } = loadEnv(
 	process.env.NODE_ENV ?? 'development',
@@ -13,7 +13,7 @@ const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET, SANITY_PREVIEW_URL_SECR
 
 export default defineConfig({
 	output: 'server',
-	adapter: node({ mode: 'standalone' }),
+	adapter: cloudflare(),
 	integrations: [
 		react(),
 		sanity({
