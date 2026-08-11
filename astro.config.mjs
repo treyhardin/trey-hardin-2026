@@ -4,6 +4,7 @@ import { loadEnv } from 'vite';
 import react from '@astrojs/react';
 import sanity from '@sanity/astro';
 import cloudflare from '@astrojs/cloudflare';
+import node from '@astrojs/node';
 
 const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET, SANITY_PREVIEW_URL_SECRET, SANITY_STUDIO_URL } = loadEnv(
 	process.env.NODE_ENV ?? 'development',
@@ -11,18 +12,13 @@ const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET, SANITY_PREVIEW_URL_SECR
 	'',
 );
 
-// Debug: log env vars at build time
-console.log('[SANITY CONFIG] Build-time env check:');
-console.log('  PUBLIC_SANITY_PROJECT_ID:', PUBLIC_SANITY_PROJECT_ID);
-console.log('  PUBLIC_SANITY_DATASET:', PUBLIC_SANITY_DATASET);
-console.log('  PUBLIC_SANITY_VISUAL_EDITING_ENABLED:', process.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED);
-console.log('  SANITY_API_READ_TOKEN:', process.env.SANITY_API_READ_TOKEN ? '✅ present' : '❌ missing');
-console.log('  SANITY_STUDIO_URL:', SANITY_STUDIO_URL || '❌ missing (using localhost fallback)');
-console.log('  SANITY_PREVIEW_URL_SECRET:', SANITY_PREVIEW_URL_SECRET ? '✅ present' : '❌ missing');
+// Use @astrojs/node for local dev (avoids Miniflare OOM on Pi), cloudflare for production
+const isProduction = process.env.NODE_ENV === 'production';
+const adapter = isProduction ? cloudflare() : node({ mode: 'standalone' });
 
 export default defineConfig({
 	output: 'server',
-	adapter: cloudflare(),
+	adapter,
 	integrations: [
 		react(),
 		sanity({

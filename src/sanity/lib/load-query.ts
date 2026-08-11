@@ -4,14 +4,6 @@ import { sanityClient } from 'sanity:client';
 const token = import.meta.env.SANITY_API_READ_TOKEN;
 const enableVisualEditing = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED?.toLowerCase() === 'true';
 
-// Debug: log runtime env state
-if (import.meta.env.DEV || import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED) {
-	console.log('[SANITY RUNTIME] Visual editing check:');
-	console.log('  PUBLIC_SANITY_VISUAL_EDITING_ENABLED:', import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED);
-	console.log('  enableVisualEditing:', enableVisualEditing);
-	console.log('  SANITY_API_READ_TOKEN:', token ? '✅ present' : '❌ missing');
-}
-
 function parsePerspective(
 	raw: string | undefined,
 ): ClientPerspective | undefined {
