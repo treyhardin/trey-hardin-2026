@@ -10,6 +10,12 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
 
 Without `--host`, the server binds to `[::1]:4321` only, which is unreachable from other machines on the network.
 
+### Dual Adapter Setup
+
+- **Local dev (`astro dev`):** Uses `@astrojs/node` adapter — avoids Miniflare entirely, runs fine on the Pi.
+- **Production builds (Cloudflare Pages):** Uses `@astrojs/cloudflare` adapter — `NODE_ENV=production` triggers the cloudflare adapter automatically.
+- The adapter swap is handled in `astro.config.mjs` via `isProduction` check.
+
 ## Sanity CMS Integration
 
 **Status:** All pages return HTTP 200. Studio loads at `/admin`. Presentation tool loads but shows "Unable to connect" in the preview iframe — **active blocker**.
@@ -28,31 +34,11 @@ Without `--host`, the server binds to `[::1]:4321` only, which is unreachable fr
 - **`previewUrlSecret`** injected into Astro config via `loadEnv` + Sanity plugin config
 - **Output:** `server` (required for draft mode cookie detection)
 
-### Draft Mode Endpoints
-- `src/pages/api/draft-mode/enable.ts` — validates secret, sets `sanity-preview-perspective` cookie, redirects
-- `src/pages/api/draft-mode/disable.ts` — clears cookie, redirects
-- Cookie config: `httpOnly: false, sameSite: 'lax', secure: false` (HTTP localhost)
-
-### Presentation Tool Config (`sanity.config.ts`)
-```ts
-presentationTool({
-  resolve, // from ./src/lib/resolve.ts
-  previewUrl: {
-    origin: 'http://localhost:4321',
-    preview: '/',
-    previewMode: {
-      enable: '/api/draft-mode/enable',
-      disable: '/api/draft-mode/disable',
-    },
-  },
-})
-```
-
-### Active Blocker: "Unable to connect" in Presentation iframe
-- Studio loads, Presentation tab appears, but preview iframe shows connection error
-- All routes return 200, including `/api/draft-mode/enable` (401 without secret — expected)
-- Possible causes: embedded Studio at `/admin` on same origin causes iframe handshake failure; may need `previewUrl.origin` to point to a different host or the Studio to run on a separate port
-- Next step: Investigate whether running Studio on a separate dev port or adjusting `previewUrl` config resolves the iframe connection
+### Visual Editing Status
+- **Confirmed working on staging** (`https://staging.treyhardin.com`)
+- `PUBLIC_SANITY_VISUAL_EDITING_ENABLED` must be lowercase `'true'` at build time
+- `load-query.ts` uses case-insensitive runtime check (`.toLowerCase() === 'true'`)
+- `stega.studioUrl` reads from `SANITY_STUDIO_URL` env var with localhost fallback
 
 ### Import Path Rules
 - From `src/pages/`: use `../lib/`, `../layouts/`, `../sanity/lib/`
