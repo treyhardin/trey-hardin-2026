@@ -1,27 +1,33 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import { loadEnv } from 'vite';
-import sanity from '@sanity/astro';
 import react from '@astrojs/react';
-import cloudflare from '@astrojs/cloudflare';
+import sanity from '@sanity/astro';
+import node from '@astrojs/node';
 
-const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET } = loadEnv(
+const { PUBLIC_SANITY_PROJECT_ID, PUBLIC_SANITY_DATASET, SANITY_PREVIEW_URL_SECRET } = loadEnv(
 	process.env.NODE_ENV ?? 'development',
 	process.cwd(),
-	''
+	'',
 );
 
 export default defineConfig({
-	adapter: cloudflare(),
+	output: 'server',
+	adapter: node({ mode: 'standalone' }),
 	integrations: [
-		...(PUBLIC_SANITY_PROJECT_ID ? [sanity({
+		react(),
+		sanity({
 			projectId: PUBLIC_SANITY_PROJECT_ID,
 			dataset: PUBLIC_SANITY_DATASET || 'production',
 			useCdn: false,
+			apiVersion: '2025-01-01',
 			studioBasePath: '/admin',
-			logClientRequests: 'dev',
-		})] : []),
-		react(),
+			studioRouterHistory: 'hash',
+			stega: {
+				studioUrl: 'http://localhost:4321/admin',
+			},
+			previewUrlSecret: SANITY_PREVIEW_URL_SECRET,
+		}),
 	],
 	vite: {
 		server: {
@@ -33,6 +39,8 @@ export default defineConfig({
 		optimizeDeps: {
 			include: [
 				'react/compiler-runtime',
+				'humanize-list',
+				'object-inspect',
 			],
 		},
 	},

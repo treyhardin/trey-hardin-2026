@@ -2,8 +2,10 @@
 import BaseLayout from '../../layouts/base.astro';
 import { getAllCaseStudies } from '../../lib/sanity';
 import { urlFor } from '../../lib/image';
+import { getDraftModeProps } from '../../sanity/lib/draft-mode';
 
-const caseStudies = await getAllCaseStudies();
+const { perspectiveCookie } = getDraftModeProps(Astro.cookies);
+const caseStudies = await getAllCaseStudies(perspectiveCookie);
 ---
 
 <BaseLayout>
@@ -55,14 +57,14 @@ const caseStudies = await getAllCaseStudies();
 		}
 
 		.work-header h1 {
-			font-size: var(--font-size-3xl);
+			font-size: var(--font-size-h2);
 			font-weight: 700;
 			letter-spacing: -0.02em;
 			margin-bottom: 0.5rem;
 		}
 
 		.work-subtitle {
-			color: var(--color-text-muted);
+			color: var(--color-fg-secondary);
 			font-size: var(--font-size-lg);
 		}
 
@@ -94,7 +96,7 @@ const caseStudies = await getAllCaseStudies();
 		.work-card-image {
 			aspect-ratio: 16 / 10;
 			overflow: hidden;
-			background: var(--color-surface-raised);
+			background: var(--color-bg-secondary);
 			border-radius: 4px;
 		}
 
@@ -118,7 +120,7 @@ const caseStudies = await getAllCaseStudies();
 			text-transform: uppercase;
 			letter-spacing: 0.06em;
 			font-family: var(--font-utility);
-			color: var(--color-text-muted);
+			color: var(--color-fg-secondary);
 		}
 
 		.work-card-client::after {
@@ -133,7 +135,7 @@ const caseStudies = await getAllCaseStudies();
 		}
 
 		.work-card-summary {
-			color: var(--color-text-muted);
+			color: var(--color-fg-secondary);
 			line-height: 1.6;
 			max-width: 48ch;
 		}
@@ -143,13 +145,13 @@ const caseStudies = await getAllCaseStudies();
 			font-family: var(--font-utility);
 			text-transform: uppercase;
 			letter-spacing: 0.04em;
-			color: var(--color-text-muted);
+			color: var(--color-fg-secondary);
 		}
 
 		.work-empty {
 			text-align: center;
 			padding: 4rem 0;
-			color: var(--color-text-muted);
+			color: var(--color-fg-secondary);
 		}
 
 		.work-empty a {

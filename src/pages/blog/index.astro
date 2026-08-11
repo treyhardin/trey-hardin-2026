@@ -2,8 +2,10 @@
 import BaseLayout from '../../layouts/base.astro';
 import { getAllBlogPosts } from '../../lib/sanity';
 import { urlFor } from '../../lib/image';
+import { getDraftModeProps } from '../../sanity/lib/draft-mode';
 
-const posts = await getAllBlogPosts();
+const { perspectiveCookie } = getDraftModeProps(Astro.cookies);
+const posts = await getAllBlogPosts(perspectiveCookie);
 ---
 
 <BaseLayout>
@@ -59,14 +61,14 @@ const posts = await getAllBlogPosts();
 		}
 
 		.blog-header h1 {
-			font-size: var(--font-size-3xl);
+			font-size: var(--font-size-h2);
 			font-weight: 700;
 			letter-spacing: -0.02em;
 			margin-bottom: 0.5rem;
 		}
 
 		.blog-subtitle {
-			color: var(--color-text-muted);
+			color: var(--color-fg-secondary);
 			font-size: var(--font-size-lg);
 		}
 
@@ -91,7 +93,7 @@ const posts = await getAllBlogPosts();
 		.blog-card-image {
 			aspect-ratio: 16 / 10;
 			overflow: hidden;
-			background: var(--color-surface-raised);
+			background: var(--color-bg-secondary);
 			border-radius: 4px;
 			margin-bottom: 1rem;
 		}
@@ -113,7 +115,7 @@ const posts = await getAllBlogPosts();
 			font-family: var(--font-utility);
 			text-transform: uppercase;
 			letter-spacing: 0.06em;
-			color: var(--color-text-muted);
+			color: var(--color-fg-secondary);
 		}
 
 		.blog-card-title {
@@ -124,7 +126,7 @@ const posts = await getAllBlogPosts();
 		}
 
 		.blog-card-excerpt {
-			color: var(--color-text-muted);
+			color: var(--color-fg-secondary);
 			font-size: var(--font-size-sm);
 			line-height: 1.6;
 		}
@@ -132,7 +134,7 @@ const posts = await getAllBlogPosts();
 		.blog-empty {
 			text-align: center;
 			padding: 4rem 0;
-			color: var(--color-text-muted);
+			color: var(--color-fg-secondary);
 		}
 
 		.blog-empty a {

@@ -1,43 +1,60 @@
 ---
-import Base from '../layouts/base.astro';
-import { PortableText } from 'astro-portabletext';
+import BaseLayout from '../layouts/base.astro';
 import { getHomepage } from '../lib/sanity';
+import { urlFor } from '../lib/image';
+import { getDraftModeProps } from '../sanity/lib/draft-mode';
 
-const homepage = await getHomepage();
+const { perspectiveCookie } = getDraftModeProps(Astro.cookies);
+const homepage = await getHomepage(perspectiveCookie);
 ---
 
-<Base>
-	<div class="constrained">
-		<h1 class="hero-heading">{homepage?.headline}</h1>
-
-		{homepage?.subheadline && (
-			<p class="subheadline">{homepage.subheadline}</p>
-		)}
-
-		{homepage?.bio && (
-			<PortableText value={homepage.bio} />
-		)}
-
+<BaseLayout>
+	<section class="hero">
+		<h1>{homepage?.headline || 'Trey Hardin'}</h1>
+		<p class="hero-sub">{homepage?.subheadline}</p>
+		{homepage?.bio && <p class="hero-bio">{homepage.bio}</p>}
 		{homepage?.ctaLabel && homepage?.ctaLink && (
-			<a class="btn btn-primary" href={homepage.ctaLink} target="_blank" rel="noopener noreferrer">
-				{homepage.ctaLabel}
-			</a>
+			<a href={homepage.ctaLink} class="hero-cta">{homepage.ctaLabel}</a>
 		)}
-	</div>
+	</section>
 
-	<style is:inline>
-		.hero-heading {
-			line-height: var(--line-height-tight);
-			margin-bottom: var(--space-4);
+	<style>
+		.hero {
+			padding: var(--page-margin);
+			min-height: 60vh;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			gap: var(--space-4);
 		}
 
-		.subheadline {
+		.hero-sub {
+			font-size: var(--font-size-lg);
 			color: var(--color-fg-secondary);
-			margin-bottom: var(--space-16);
+			max-width: 60ch;
 		}
 
-		p {
-			margin-bottom: var(--space-8);
+		.hero-bio {
+			font-size: var(--font-size-body);
+			color: var(--color-fg-secondary);
+			max-width: 60ch;
+			line-height: 1.7;
+		}
+
+		.hero-cta {
+			display: inline-block;
+			margin-top: var(--space-2);
+			padding: var(--space-2) var(--space-5);
+			background: var(--color-accent);
+			color: var(--color-bg);
+			text-decoration: none;
+			border-radius: var(--radius-full);
+			font-weight: var(--font-weight-medium);
+			transition: opacity var(--transition-fast);
+		}
+
+		.hero-cta:hover {
+			opacity: 0.85;
 		}
 	</style>
-</Base>
+</BaseLayout>

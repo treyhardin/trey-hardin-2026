@@ -2,8 +2,10 @@
 import BaseLayout from '../../layouts/base.astro';
 import { getAllClients } from '../../lib/sanity';
 import { urlFor } from '../../lib/image';
+import { getDraftModeProps } from '../../sanity/lib/draft-mode';
 
-const clients = await getAllClients();
+const { perspectiveCookie } = getDraftModeProps(Astro.cookies);
+const clients = await getAllClients(perspectiveCookie);
 ---
 
 <BaseLayout>

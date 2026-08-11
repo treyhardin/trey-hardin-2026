@@ -1,33 +1,33 @@
 ---
 import BaseLayout from '../../layouts/base.astro';
-import { getBlogPostBySlug } from '../../lib/sanity';
+import { getBlogPostBySlug, getAllBlogPosts } from '../../lib/sanity';
 import { urlFor } from '../../lib/image';
+import { getDraftModeProps } from '../../sanity/lib/draft-mode';
 
 export async function getStaticPaths() {
-	const { getAllBlogPosts } = await import('../../lib/sanity');
-	const posts = await getAllBlogPosts();
-
-	return posts.map((post: any) => ({
-		params: { slug: post.slug.current },
-	}));
+	try {
+		const posts = await getAllBlogPosts();
+		// GROQ returns slug as a plain string, not an object.
+		// Return at least one path so Astro can generate the route even with empty content.
+		const paths = (posts && posts.length) ? posts : [{ slug: '__empty__' }];
+		return paths.map((post: any) => ({
+			params: { slug: post.slug },
+		}));
+	} catch (e) {
+		console.error('getStaticPaths (blog) failed:', e);
+		return [{ params: { slug: '__empty__' } }];
+	}
 }
 
 const slug = Astro.params.slug;
-const post = await getBlogPostBySlug(slug);
+const { perspectiveCookie } = getDraftModeProps(Astro.cookies);
+const post = await getBlogPostBySlug(slug, perspectiveCookie);
 
 if (!post) {
 	return Astro.response = new Response('Not found', { status: 404 });
 }
 
 // Portable Text block renderer
-// Decouple HTML semantics from visual styling:
-// Blog post title is the real <h1>, so everything inside
-// the rich content body shifts down one level.
-//   Sanity H1 → <h2 class="rt-h1">
-//   Sanity H2 → <h3 class="rt-h2">
-//   … and so on.
-// The class carries the visual weight; the tag carries the semantics.
-
 const HEADING_MAP: Record<string, string> = {
 	h1: 'h2',
 	h2: 'h3',
@@ -47,7 +47,6 @@ function renderBlock(block: any) {
 	return `<${tag} class="rt-${block.style || 'normal'}">${children}</${tag}>`;
 }
 
-// Inline marks renderer
 function renderChild(child: any, block: any) {
 	let text = child.text || '';
 	const marks = child.marks || [];
@@ -74,27 +73,24 @@ function renderChild(child: any, block: any) {
 	return text;
 }
 
-// We need access to markDefs, so wrap the renderer
 function renderBody(body: any[]) {
 	let html = '';
 	let i = 0;
-	
+
 	while (i < body.length) {
 		const block = body[i];
-		
+
 		if (block._type === 'image') {
 			html += `<figure class="rt-image"><img src="${urlFor(block).width(1200).auto('format').url()}" alt="${block.alt || ''}" /></figure>`;
 			i++;
 			continue;
 		}
-		
+
 		if (block._type === 'block' && block.children) {
-			// Handle list items by grouping consecutive items
 			if (block.listItem) {
 				const listType = block.listItem === 'number' ? 'ol' : 'ul';
 				html += `<${listType} class="rt-${listType}">`;
-				
-				// Consume all consecutive list items of the same type
+
 				while (i < body.length && body[i]._type === 'block' && body[i].listItem === block.listItem) {
 					const item = body[i];
 					const children = item.children.map((child: any) => {
@@ -112,14 +108,13 @@ function renderBody(body: any[]) {
 				html += `</${listType}>`;
 				continue;
 			}
-			
-			// Handle horizontal rules (empty blocks)
+
 			if (block.children.length === 0) {
 				html += `<hr class="rt-hr" />`;
 				i++;
 				continue;
 			}
-			
+
 			const tag = block.style === 'normal' || !block.style ? 'p' : HEADING_MAP[block.style] || block.style;
 			const children = block.children.map((child: any) => {
 				let text = child.text || '';
@@ -195,7 +190,7 @@ const bodyHtml = renderBody(post.body || []);
 			font-family: var(--font-utility);
 			text-transform: uppercase;
 			letter-spacing: 0.06em;
-			color: var(--color-text-muted);
+			color: var(--color-fg-secondary);
 			margin-bottom: 1rem;
 			display: block;
 		}
@@ -224,12 +219,6 @@ const bodyHtml = renderBody(post.body || []);
 			object-fit: cover;
 		}
 
-		/* ── Rich content body ── */
-		/* All type styles inherit global font-size, letter-spacing, and line-height
-		   from base.astro tag selectors. We only override font-size per class to
-		   restore visual weight after the semantic shift (h1→h2, h2→h3, etc.).
-		   Margin-bottom is RTE-specific for vertical rhythm. */
-
 		:global(.blog-post-body) {
 			max-width: 65ch;
 		}
@@ -238,7 +227,6 @@ const bodyHtml = renderBody(post.body || []);
 			margin-bottom: var(--space-5);
 		}
 
-		/* Headings — font-size only; everything else from global tag selectors */
 		:global(.rt-h1) { font-size: var(--font-size-h1); margin-top: var(--space-12); margin-bottom: var(--space-3); }
 		:global(.rt-h2) { font-size: var(--font-size-h2); margin-top: var(--space-10); margin-bottom: var(--space-3); }
 		:global(.rt-h3) { font-size: var(--font-size-h3); margin-top: var(--space-8);  margin-bottom: var(--space-2); }
@@ -246,7 +234,6 @@ const bodyHtml = renderBody(post.body || []);
 		:global(.rt-h5) { font-size: var(--font-size-h5); margin-top: var(--space-6);  margin-bottom: var(--space-2); }
 		:global(.rt-h6) { font-size: var(--font-size-h6); margin-top: var(--space-6);  margin-bottom: var(--space-2); }
 
-		/* Blockquote */
 		:global(.rt-blockquote),
 		:global(.blog-post-body blockquote) {
 			border-left: var(--border-width-1) solid var(--color-accent);
@@ -256,7 +243,6 @@ const bodyHtml = renderBody(post.body || []);
 			color: var(--color-fg-secondary);
 		}
 
-		/* Lists */
 		:global(.rt-ul),
 		:global(.rt-ol) {
 			margin: var(--space-5) 0;
@@ -269,28 +255,18 @@ const bodyHtml = renderBody(post.body || []);
 			padding-left: var(--space-1);
 		}
 
-		:global(.rt-ul li:last-child) {
-			margin-bottom: 0;
-		}
-
 		:global(.rt-ol li) {
 			list-style-type: decimal;
 			margin-bottom: var(--space-2);
 			padding-left: var(--space-1);
 		}
 
-		:global(.rt-ol li:last-child) {
-			margin-bottom: 0;
-		}
-
-		/* Horizontal rule */
 		:global(.rt-hr) {
 			border: none;
 			border-top: var(--border-width-1) solid var(--color-border);
 			margin: var(--space-10) 0;
 		}
 
-		/* Inline code */
 		:global(.blog-post-body code) {
 			font-family: var(--font-mono);
 			font-size: 0.875em;
@@ -299,7 +275,6 @@ const bodyHtml = renderBody(post.body || []);
 			border-radius: var(--radius-sm);
 		}
 
-		/* Code block */
 		:global(.rt-code) {
 			font-family: var(--font-mono);
 			background: var(--color-bg-secondary);
@@ -316,7 +291,6 @@ const bodyHtml = renderBody(post.body || []);
 			border-radius: 0;
 		}
 
-		/* Inline marks */
 		:global(.blog-post-body strong) {
 			font-weight: var(--font-weight-bold);
 		}
@@ -336,7 +310,6 @@ const bodyHtml = renderBody(post.body || []);
 			text-decoration-thickness: 2px;
 		}
 
-		/* Images */
 		:global(.rt-image) {
 			margin: var(--space-10) 0;
 			width: 100%;
@@ -349,7 +322,6 @@ const bodyHtml = renderBody(post.body || []);
 			display: block;
 		}
 
-		/* Footer */
 		.blog-post-footer {
 			margin-top: 4rem;
 			padding-top: 2rem;

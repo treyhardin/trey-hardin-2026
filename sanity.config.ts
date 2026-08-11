@@ -1,21 +1,47 @@
 import { defineConfig } from 'sanity';
 import { defineType, defineField, defineArrayMember } from 'sanity';
 import { structureTool } from 'sanity/structure';
+import { presentationTool } from 'sanity/presentation';
 import { DocumentIcon } from '@sanity/icons/Document';
 import { DocumentTextIcon } from '@sanity/icons/DocumentText';
 import { UsersIcon } from '@sanity/icons/Users';
 import { EditIcon } from '@sanity/icons/Edit';
 import { structure } from './sanity.structure';
+import { resolve } from './src/lib/resolve';
+
+const previewUrlSecret = import.meta.env.SANITY_PREVIEW_URL_SECRET;
+
+// Project ID and dataset — hardcoded because the embedded Studio's Vite build
+// does not inherit Astro's import.meta.env vars.
+const PROJECT_ID = 'vs8d5hbw';
+const DATASET = 'production';
 
 export default defineConfig({
 	name: 'portfolio-2026',
 	title: 'Portfolio CMS',
 
-	projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID,
-	dataset: import.meta.env.PUBLIC_SANITY_DATASET || 'production',
+	projectId: PROJECT_ID,
+	dataset: DATASET,
 
 	plugins: [
 		structureTool({ structure }),
+		presentationTool({
+			resolve,
+			previewUrl: {
+				origin: typeof location === 'undefined'
+					? 'http://localhost:4321'
+					: location.origin,
+				preview: '/',
+				previewMode: {
+					enable: '/api/draft-mode/enable',
+					disable: '/api/draft-mode/disable',
+				},
+			},
+			allowOrigins: [
+				'http://localhost:4321',
+				'http://100.88.85.21:4321',
+			],
+		}, { previewUrlSecret }),
 	],
 
 	schema: {

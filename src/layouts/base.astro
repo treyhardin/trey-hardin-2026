@@ -1,6 +1,10 @@
 ---
 import Header from '../components/Header.astro';
 import ContactDrawer from '../components/ContactDrawer.astro';
+import { VisualEditingComponent as VisualEditing } from '@sanity/astro/visual-editing/component';
+import { perspectiveCookieName } from '@sanity/preview-url-secret/constants';
+
+const draftMode = Astro.cookies.has(perspectiveCookieName);
 ---
 
 <!doctype html>
@@ -1051,5 +1055,6 @@ import ContactDrawer from '../components/ContactDrawer.astro';
 			});
 		})();
 	</script>
+	<VisualEditing client:only="react" />
 </body>
 </html>
