@@ -454,6 +454,7 @@ const footer = await getFooter();
 
 		/* ── Layout ── */
 		.container {
+			width: 100%;
 			max-width: var(--max-page-width);
 			margin-left: auto;
 			margin-right: auto;
@@ -461,29 +462,31 @@ const footer = await getFooter();
 			padding-right: var(--page-margin);
 		}
 
-		header.container {
-			padding-top: var(--space-6);
-			padding-bottom: var(--space-6);
+		/* Header/footer stretch to full width; main centers via flex */
+		header,
+		footer {
+			width: 100%;
 		}
 
-		header nav a {
-			text-decoration: none;
-			color: var(--color-fg);
+		main {
+			flex: 1 0 auto;
+			max-width: var(--max-page-width);
+			padding-left: var(--page-margin);
+			padding-right: var(--page-margin);
+			margin-left: auto;
+			margin-right: auto;
 		}
 
-		footer.container {
+		footer {
 			padding-top: var(--space-8);
 			padding-bottom: var(--space-8);
 			margin-top: var(--space-16);
 		}
 
-		main {
-			flex: 1 0 auto;
-		}
-
 		footer nav {
 			display: flex;
 			gap: var(--space-6);
+			justify-content: center;
 		}
 
 		footer nav a {
@@ -502,6 +505,7 @@ const footer = await getFooter();
 			margin-top: var(--space-6);
 			color: var(--color-fg-secondary);
 			font-size: var(--font-size-body);
+			text-align: center;
 		}
 
 		/* ── Tweak System ── */
@@ -778,21 +782,23 @@ const footer = await getFooter();
 	<Header navLinks={header?.links} />
 	<ContactDrawer />
 
-	<main class="container">
+	<main>
 		<slot />
 	</main>
 
-	<footer class="container">
-		<nav>
-			{footer?.links?.map((link) => (
-				<a href={link.href} {link.openInNewTab ? `target="_blank" rel="noopener"` : ''}>
-					{link.label}
-				</a>
-			))}
-		</nav>
-		{footer?.copyright && (
-			<p class="copyright">{footer.copyright}</p>
-		)}
+	<footer>
+		<div class="container">
+			<nav>
+				{footer?.links?.map((link) => (
+					<a href={link.href} {link.openInNewTab ? `target="_blank" rel="noopener"` : ''}>
+						{link.label}
+					</a>
+				))}
+			</nav>
+			{footer?.copyright && (
+				<p class="copyright">{footer.copyright}</p>
+			)}
+		</div>
 	</footer>
 
 	<!-- Tweak System: Gear button → menu → drawer panels -->
