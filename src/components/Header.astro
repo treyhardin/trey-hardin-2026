@@ -37,9 +37,6 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 
 	<button class="contact-trigger" aria-label="Open contact" aria-expanded="false">
 		<span class="contact-trigger-text">Contact</span>
-		<svg class="contact-trigger-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-			<polyline points="6 9 12 15 18 9" />
-		</svg>
 	</button>
 </header>
 
@@ -109,7 +106,6 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 	.contact-trigger {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--space-3xs);
 		padding: var(--space-2xs) var(--space-xs);
 		font-size: var(--font-size-utility);
 		font-weight: var(--font-weight-utility);
@@ -132,16 +128,6 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 
 	.contact-trigger:active {
 		transform: scale(0.97);
-	}
-
-	.contact-trigger-arrow {
-		width: var(--space-sm);
-		height: var(--space-sm);
-		transition: transform var(--transition-slow);
-	}
-
-	.contact-trigger[aria-expanded="true"] .contact-trigger-arrow {
-		transform: rotate(180deg);
 	}
 </style>
 

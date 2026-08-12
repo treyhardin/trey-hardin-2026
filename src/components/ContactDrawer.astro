@@ -1,5 +1,5 @@
 ---
-// Contact drawer: slides from right, contains contact links
+// Contact drawer: slides from right, contains a contact form
 ---
 
 <div class="contact-drawer-overlay" id="contactDrawerOverlay">
@@ -14,40 +14,27 @@
 			</button>
 		</div>
 
-		<div class="contact-drawer-content">
-			<a href="mailto:hello@treyhardin.com" class="contact-item">
-				<svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-					<rect x="2" y="4" width="20" height="16" rx="2" />
-					<path d="M22 4L12 13 2 4" />
-				</svg>
-				<div class="contact-item-text">
-					<span class="contact-item-label">Email</span>
-					<span class="contact-item-value">hello@treyhardin.com</span>
-				</div>
-			</a>
+		<form class="contact-form" id="contactForm" method="POST" action="https://formsubmit.co/ajax/hello@treyhardin.com">
+			<div class="contact-form-fields">
+				<label class="contact-field" for="contactName">
+					<span class="contact-field-label">Name</span>
+					<input class="contact-field-input" type="text" id="contactName" name="name" required autocomplete="name" />
+				</label>
 
-			<a href="https://linkedin.com/in/treyhardin" target="_blank" rel="noopener noreferrer" class="contact-item">
-				<svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-					<path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z" />
-					<rect x="2" y="9" width="4" height="12" />
-					<circle cx="4" cy="4" r="2" />
-				</svg>
-				<div class="contact-item-text">
-					<span class="contact-item-label">LinkedIn</span>
-					<span class="contact-item-value">/in/treyhardin</span>
-				</div>
-			</a>
+				<label class="contact-field" for="contactOrg">
+					<span class="contact-field-label">Organization <span class="optional">(optional)</span></span>
+					<input class="contact-field-input" type="text" id="contactOrg" name="organization" autocomplete="organization" />
+				</label>
 
-			<a href="https://x.com/treyhardin" target="_blank" rel="noopener noreferrer" class="contact-item">
-				<svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-					<path d="M4 4l16 16M20 4L4 20" />
-				</svg>
-				<div class="contact-item-text">
-					<span class="contact-item-label">Twitter / X</span>
-					<span class="contact-item-value">@treyhardin</span>
-				</div>
-			</a>
-		</div>
+				<label class="contact-field" for="contactMessage">
+					<span class="contact-field-label">Message</span>
+					<textarea class="contact-field-input contact-field-textarea" id="contactMessage" name="message" required rows="4"></textarea>
+				</label>
+			</div>
+
+			<button class="contact-submit" type="submit">Send Message</button>
+			<p class="contact-status" id="contactStatus" aria-live="polite"></p>
+		</form>
 	</div>
 </div>
 
@@ -73,7 +60,7 @@
 		height: 100%;
 		background: var(--color-bg);
 		border-left: var(--border-width-1) solid var(--color-border);
-		padding: var(--space-6);
+		padding: var(--space-lg);
 		overflow-y: auto;
 		transform: translateX(100%);
 		transition: transform var(--transition-spring);
@@ -89,8 +76,8 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: var(--space-8);
-		padding-bottom: var(--space-4);
+		margin-bottom: var(--space-lg);
+		padding-bottom: var(--space-sm);
 		border-bottom: var(--border-width-1) solid var(--color-border);
 	}
 
@@ -106,7 +93,7 @@
 		border: none;
 		color: var(--color-fg-secondary);
 		cursor: pointer;
-		padding: var(--space-1);
+		padding: var(--space-2xs);
 		display: grid;
 		place-items: center;
 		transition: color var(--transition-fast);
@@ -117,47 +104,29 @@
 	}
 
 	.contact-drawer-close svg {
-		width: var(--space-5);
-		height: var(--space-5);
+		width: var(--space-md);
+		height: var(--space-md);
 	}
 
-	.contact-drawer-content {
+	.contact-form {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-2);
+		gap: var(--space-md);
 	}
 
-	.contact-item {
-		display: flex;
-		align-items: center;
-		gap: var(--space-3);
-		padding: var(--space-3) var(--space-4);
-		text-decoration: none;
-		color: var(--color-fg);
-		border-radius: var(--radius-md);
-		transition: background var(--transition-fast);
-	}
-
-	.contact-item:hover {
-		background: var(--color-bg-secondary);
-		text-decoration: none;
-	}
-
-	.contact-icon {
-		width: var(--space-5);
-		height: var(--space-5);
-		flex-shrink: 0;
-		color: var(--color-fg-secondary);
-	}
-
-	.contact-item-text {
+	.contact-form-fields {
 		display: flex;
 		flex-direction: column;
-		gap: 0;
-		line-height: 1.3;
+		gap: var(--space-sm);
 	}
 
-	.contact-item-label {
+	.contact-field {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2xs);
+	}
+
+	.contact-field-label {
 		font-size: var(--font-size-utility);
 		font-weight: var(--font-weight-utility);
 		text-transform: uppercase;
@@ -165,9 +134,76 @@
 		color: var(--color-fg-secondary);
 	}
 
-	.contact-item-value {
+	.contact-field-label .optional {
+		text-transform: none;
+		letter-spacing: inherit;
+		font-weight: var(--font-weight-regular);
+		color: var(--color-fg-tertiary);
+	}
+
+	.contact-field-input {
+		font-family: inherit;
 		font-size: var(--font-size-body);
-		font-weight: var(--font-weight-medium);
+		color: var(--color-fg);
+		background: var(--color-bg-secondary);
+		border: var(--border-width-1) solid var(--color-border);
+		border-radius: var(--radius-md);
+		padding: var(--space-2xs) var(--space-xs);
+		transition: border-color var(--transition-fast);
+		outline: none;
+	}
+
+	.contact-field-input:focus {
+		border-color: var(--color-accent);
+	}
+
+	.contact-field-textarea {
+		resize: vertical;
+		min-height: 120px;
+		line-height: 1.5;
+	}
+
+	.contact-submit {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: var(--space-2xs) var(--space-sm);
+		font-size: var(--font-size-utility);
+		font-weight: var(--font-weight-utility);
+		text-transform: uppercase;
+		letter-spacing: var(--letter-spacing-utility);
+		font-family: inherit;
+		background: var(--color-fg);
+		color: var(--color-bg);
+		border: var(--border-width-1) solid var(--color-fg);
+		border-radius: var(--radius-md);
+		cursor: pointer;
+		transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+		flex-shrink: 0;
+	}
+
+	.contact-submit:hover {
+		background: transparent;
+		color: var(--color-fg);
+	}
+
+	.contact-submit:active {
+		transform: scale(0.97);
+	}
+
+	.contact-status {
+		font-size: var(--font-size-body);
+		text-align: center;
+		min-height: var(--font-size-body);
+		line-height: 1.5;
+	}
+
+	.contact-status.success {
+		color: var(--color-accent);
+	}
+
+	.contact-status.error {
+		color: var(--color-error, #e53e3e);
 	}
 </style>
 
@@ -175,10 +211,14 @@
 	(function () {
 		const overlay = document.getElementById('contactDrawerOverlay');
 		const closeBtn = overlay?.querySelector('.contact-drawer-close');
+		const form = document.getElementById('contactForm');
+		const status = document.getElementById('contactStatus');
 		if (!overlay) return;
 
 		function toggle(open) {
 			overlay.classList.toggle('open', open);
+			document.querySelector('.contact-trigger')
+				?.setAttribute('aria-expanded', String(open));
 			if (open) {
 				document.body.style.overflow = 'hidden';
 			} else {
@@ -205,5 +245,39 @@
 				toggle(false);
 			}
 		});
+
+		if (form && status) {
+			form.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				const btn = form.querySelector('.contact-submit');
+				btn.disabled = true;
+				btn.textContent = 'Sending…';
+				status.textContent = '';
+				status.className = 'contact-status';
+
+				try {
+					const res = await fetch(form.action, {
+						method: 'POST',
+						body: new FormData(form),
+						headers: { Accept: 'application/json' }
+					});
+
+					if (res.ok) {
+						status.textContent = 'Message sent — thanks!';
+						status.className = 'contact-status success';
+						form.reset();
+					} else {
+						status.textContent = 'Something went wrong. Try again or email hello@treyhardin.com';
+						status.className = 'contact-status error';
+					}
+				} catch {
+					status.textContent = 'Network error. Try again or email hello@treyhardin.com';
+					status.className = 'contact-status error';
+				} finally {
+					btn.disabled = false;
+					btn.textContent = 'Send Message';
+				}
+			});
+		}
 	})();
 </script>
