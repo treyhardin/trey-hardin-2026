@@ -91,6 +91,27 @@ function renderBody(body: any[]) {
 			continue;
 		}
 
+		if (block._type === 'sanityMedia') {
+			const hasVideo = !!block.video?.asset?._ref;
+			const hasImage = !!block.image?.image?.asset?._ref;
+			if (hasVideo) {
+				const videoUrl = urlFor({ _ref: block.video.asset._ref }).url();
+				const posterUrl = hasImage
+					? urlFor(block.image.image).width(1920).auto('format').url()
+					: undefined;
+				html += `<figure class="rt-media rt-media--video">
+					<video controls muted playsinline preload="metadata"${posterUrl ? ` poster="${posterUrl}"` : ''}>
+						<source src="${videoUrl}" type="video/mp4" />
+					</video>
+				</figure>`;
+			} else if (hasImage) {
+				const imgSrc = urlFor(block.image.image).width(1200).auto('format').url();
+				html += `<figure class="rt-media rt-media--image"><img src="${imgSrc}" alt="${block.image.alt || ''}" /></figure>`;
+			}
+			i++;
+			continue;
+		}
+
 		if (block._type === 'block' && block.children) {
 			if (block.listItem) {
 				const listType = block.listItem === 'number' ? 'ol' : 'ul';

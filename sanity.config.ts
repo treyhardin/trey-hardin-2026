@@ -104,6 +104,45 @@ const sanityImageObject = defineType({
 	],
 });
 
+// ── Reusable: Sanity Media Object ──
+// A flexible media block that can hold an image, a video, or both.
+// When both are present, the image serves as an optimized poster/placeholder
+// for the video. Alt text is only required when no video is attached.
+const sanityMediaObject = defineType({
+	name: 'sanityMedia',
+	title: 'Media',
+	type: 'object',
+	fields: [
+		defineField({
+			name: 'video',
+			title: 'Video',
+			type: 'file',
+			options: {
+				accept: 'video/*',
+			},
+			description: 'Upload a video file (MP4 recommended)',
+		}),
+		defineField({
+			name: 'image',
+			title: 'Image / Poster',
+			type: 'sanityImage',
+			description: 'When paired with a video, this serves as the poster frame. Without a video, it renders as a standalone image.',
+		}),
+	],
+	preview: {
+		select: {
+			title: 'video',
+			media: 'image.image',
+		},
+		prepare({ title, media }) {
+			return {
+				title: title ? 'Video' : (media ? 'Image' : 'Empty media'),
+				media,
+			};
+		},
+	},
+});
+
 export default defineConfig({
 	name: 'portfolio-2026',
 	title: 'Portfolio CMS',
@@ -459,6 +498,7 @@ export default defineConfig({
 
 			// ── Reusable types ──
 			sanityImageObject,
+			sanityMediaObject,
 			linkObject,
 			linkList,
 		],

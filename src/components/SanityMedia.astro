@@ -1,0 +1,174 @@
+---
+import { urlFor } from '../lib/image';
+import SanityImage from './SanityImage.astro';
+
+/** The nested sanityImage shape from Sanity */
+interface SanityImageShape {
+	image: {
+		_ref?: string;
+		asset?: { _ref: string };
+		crop?: { top?: number; bottom?: number; left?: number; right?: number };
+		hotspot?: { x?: number; y?: number; height?: number; width?: number };
+	};
+	alt?: string;
+}
+
+/** The video asset reference from Sanity file field */
+interface SanityVideoShape {
+	asset: {
+		_ref: string;
+		url: string;
+		mimeType?: string;
+	};
+}
+
+export interface SanityMediaProps {
+	/** The sanityMedia object from Sanity (contains optional video + optional image). */
+	media: {
+		video?: SanityVideoShape;
+		image?: SanityImageShape;
+	};
+
+	/** Responsive breakpoints for the image/poster. Defaults to [400, 600, 800, 1000, 1200, 1400]. */
+	breakpoints?: number[];
+
+	/** CSS aspect-ratio (e.g. "16/9", "1/1", "auto"). Defaults to "16/9". */
+	aspectRatio?: string;
+
+	/** Loading strategy. Defaults to "lazy". */
+	loading?: 'lazy' | 'eager';
+
+	/** Autoplay when visible (intersection observer). Defaults to true. */
+	autoplay?: boolean;
+
+	/** Mute video by default. Defaults to true (required for autoplay). */
+	muted?: boolean;
+
+	/** Loop video. Defaults to false. */
+	loop?: boolean;
+
+	/** CSS class for the wrapper element. */
+	className?: string;
+}
+
+const {
+	media,
+	breakpoints,
+	aspectRatio = '16/9',
+	loading = 'lazy',
+	autoplay = true,
+	muted = true,
+	loop = false,
+	className = '',
+} = Astro.props;
+
+const hasVideo = !!media.video?.asset?._ref;
+const hasImage = !!media.image?.image?.asset?._ref;
+
+// If neither video nor image, render nothing
+if (!hasVideo && !hasImage) {
+	return null;
+}
+
+// Resolve video URL via Sanity CDN
+const videoUrl = hasVideo
+	? urlFor({ _ref: media.video!.asset._ref }).url()
+	: undefined;
+
+// Resolve poster URL from the sanityImage when both video + image exist
+const posterUrl = hasVideo && hasImage
+	? urlFor(media.image!.image).width(1920).auto('format').url()
+	: undefined;
+
+---
+
+{hasVideo && (
+	<div class={`sanity-media sanity-media--video ${className}`} data-aspect={aspectRatio}>
+		<video
+			class="sanity-media__video"
+			{...{ controls: true }}
+			{...{ muted: muted ? '' : undefined }}
+			{...{ playsinline: '' }}
+			{...{ preload: 'metadata' }}
+			{...{ loop: loop ? '' : undefined }}
+			{...{ autoplay: autoplay ? '' : undefined }}
+			{...posterUrl ? { poster: posterUrl } : {}}
+		>
+			<source src={videoUrl} type="video/mp4" />
+		</video>
+
+		{hasImage && (
+			<div class="sanity-media__poster" data-poster>
+				<SanityImage
+					image={media.image!}
+					breakpoints={breakpoints}
+					aspectRatio={aspectRatio}
+					loading={loading}
+				/>
+			</div>
+		)}
+	</div>
+)}
+
+{!hasVideo && hasImage && (
+	<div class={`sanity-media sanity-media--image ${className}`}>
+		<SanityImage
+			image={media.image!}
+			breakpoints={breakpoints}
+			aspectRatio={aspectRatio}
+			loading={loading}
+		/>
+	</div>
+)}
+
+<style is:inline>
+	.sanity-media {
+		display: block;
+		position: relative;
+		overflow: hidden;
+		width: 100%;
+		background: #000;
+	}
+
+	.sanity-media[data-aspect] {
+		aspect-ratio: attr(data-aspect);
+	}
+
+	.sanity-media__video {
+		width: 100%;
+		height: 100%;
+		display: block;
+		object-fit: cover;
+	}
+
+	/* Poster overlay — sits above video, fades when video plays */
+	.sanity-media__poster {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		transition: opacity 0.4s ease;
+	}
+
+	.sanity-media__poster img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+</style>
+
+<script>
+	// Fade out the poster overlay when video starts playing
+	document.querySelectorAll<HTMLElement>('.sanity-media--video').forEach(container => {
+		const video = container.querySelector('video');
+		const poster = container.querySelector('[data-poster]');
+		if (!video || !poster) return;
+
+		const hidePoster = () => {
+			poster.style.opacity = '0';
+			poster.style.pointerEvents = 'none';
+		};
+
+		video.addEventListener('play', hidePoster, { once: true });
+		video.addEventListener('playing', hidePoster, { once: true });
+	});
+</script>
