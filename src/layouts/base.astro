@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import ContactDrawer from '../components/ContactDrawer.astro';
 import { getHeader, getFooter } from '../lib/sanity';
@@ -19,6 +20,7 @@ const footer = await getFooter();
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 	<meta name="generator" content={Astro.generator} />
+	<ClientRouter />
 	<title>
 		<slot name="title">Trey Hardin — Design Lead</slot>
 	</title>
@@ -473,8 +475,6 @@ const footer = await getFooter();
 			max-width: var(--max-page-width);
 			padding-left: var(--page-margin);
 			padding-right: var(--page-margin);
-			margin-left: auto;
-			margin-right: auto;
 		}
 
 		footer {
@@ -486,7 +486,6 @@ const footer = await getFooter();
 		footer nav {
 			display: flex;
 			gap: var(--space-6);
-			justify-content: center;
 		}
 
 		footer nav a {
@@ -505,7 +504,6 @@ const footer = await getFooter();
 			margin-top: var(--space-6);
 			color: var(--color-fg-secondary);
 			font-size: var(--font-size-body);
-			text-align: center;
 		}
 
 		/* ── Tweak System ── */
@@ -779,10 +777,10 @@ const footer = await getFooter();
 </head>
 
 <body>
-	<Header navLinks={header?.links} />
+	<Header navLinks={header?.links} transition:persist />
 	<ContactDrawer />
 
-	<main>
+	<main transition:animate="fade">
 		<slot />
 	</main>
 
