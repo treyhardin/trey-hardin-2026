@@ -788,7 +788,7 @@ const footer = await getFooter();
 		<div class="container">
 			<nav>
 				{footer?.links?.map((link) => (
-					<a href={link.href} {link.openInNewTab ? `target="_blank" rel="noopener"` : ''}>
+					<a href={link.href} {...(link.openInNewTab ? {target: '_blank', rel: 'noopener'} : {})}>
 						{link.label}
 					</a>
 				))}
