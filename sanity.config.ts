@@ -236,11 +236,10 @@ export default defineConfig({
 						options: {
 							source: 'title',
 							maxLength: 96,
-							isUnique: true,
 						},
-						validation: (rule) => rule.required(),
-					}),
-					defineField({
+						validation: (rule) => rule.required().unique(),
+						}),
+						defineField({
 						name: 'client',
 						title: 'Client',
 						type: 'reference',
@@ -368,17 +367,16 @@ export default defineConfig({
 							options: {
 								source: 'title',
 								maxLength: 96,
-								isUnique: true,
 							},
-							validation: (rule) => rule.required(),
-						}),
-						defineField({
+							validation: (rule) => rule.required().unique(),
+							}),
+							defineField({
 							name: 'coverImage',
 							title: 'Cover Image',
 							type: 'image',
 							options: { hotspot: true },
-						}),
-						defineField({
+							}),
+							defineField({
 							name: 'excerpt',
 							title: 'Excerpt',
 							type: 'text',
