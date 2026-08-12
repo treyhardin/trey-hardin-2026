@@ -21,6 +21,10 @@ interface SanityVideoShape {
 		url?: string;
 		mimeType?: string;
 		extension?: string;
+		/** Asset metadata for intrinsic dimensions (CLS prevention) */
+		metadata?: {
+			dimensions?: { width?: number; height?: number };
+		};
 	};
 }
 
@@ -34,7 +38,7 @@ export interface SanityMediaProps {
 	/** Responsive breakpoints for the image/poster. Defaults to [400, 600, 800, 1000, 1200, 1400]. */
 	breakpoints?: number[];
 
-	/** CSS aspect-ratio (e.g. "16/9", "1/1", "auto"). Defaults to "16/9". */
+	/** CSS aspect-ratio (e.g. "16/9", "1/1", "auto"). Defaults to "auto" (intrinsic). */
 	aspectRatio?: string;
 
 	/** Loading strategy. Defaults to "lazy". */
@@ -59,7 +63,7 @@ export interface SanityMediaProps {
 const {
 	media,
 	breakpoints,
-	aspectRatio = '16/9',
+	aspectRatio = 'auto',
 	loading = 'lazy',
 	autoplay = true,
 	muted = true,
@@ -86,6 +90,15 @@ const videoUrl = media.video?.asset?.url
 // Resolve video MIME type from asset
 const videoMimeType = media.video?.asset?.mimeType ?? 'video/mp4';
 
+// Resolve aspect ratio: explicit override wins, otherwise use intrinsic dimensions (CLS prevention)
+const videoWidth = media.video?.asset?.metadata?.dimensions?.width;
+const videoHeight = media.video?.asset?.metadata?.dimensions?.height;
+const resolvedAspectRatio = aspectRatio !== 'auto'
+	? aspectRatio // Explicit override — media fills the space with object-fit
+	: (videoWidth && videoHeight)
+		? `${videoWidth}/${videoHeight}` // Intrinsic
+		: '16/9'; // Fallback
+
 // Resolve poster URL from the sanityImage when both video + image exist
 const posterUrl = hasVideo && hasImage
 	? urlFor(media.image!.image).width(1920).auto('format').url()
@@ -94,7 +107,7 @@ const posterUrl = hasVideo && hasImage
 ---
 
 {hasVideo && (
-	<div class={`sanity-media sanity-media--video ${className}`} data-aspect={aspectRatio}>
+	<div class={`sanity-media sanity-media--video ${className}`} style={`aspect-ratio: ${resolvedAspectRatio}`}>
 		<video
 			class="sanity-media__video"
 			controls={showControls}
@@ -113,7 +126,7 @@ const posterUrl = hasVideo && hasImage
 				<SanityImage
 					image={media.image!}
 					breakpoints={breakpoints}
-					aspectRatio={aspectRatio}
+					aspectRatio={resolvedAspectRatio}
 					loading={loading}
 				/>
 			</div>
@@ -122,7 +135,7 @@ const posterUrl = hasVideo && hasImage
 )}
 
 {!hasVideo && hasImage && (
-	<div class={`sanity-media sanity-media--image ${className}`}>
+	<div class={`sanity-media sanity-media--image ${className}`} style={`aspect-ratio: ${resolvedAspectRatio}`}>
 		<SanityImage
 			image={media.image!}
 			breakpoints={breakpoints}
@@ -139,10 +152,6 @@ const posterUrl = hasVideo && hasImage
 		overflow: hidden;
 		width: 100%;
 		background: #000;
-	}
-
-	.sanity-media[data-aspect] {
-		aspect-ratio: attr(data-aspect);
 	}
 
 	.sanity-media__video {

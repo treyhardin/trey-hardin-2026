@@ -2,28 +2,28 @@ import { defineQuery } from 'groq';
 
 export const HOMEPAGE_QUERY = defineQuery(`*[_type == "homepage"][0]{
   ...,
-  heroMedia{..., video{..., asset->}, image{..., image}},
+  heroMedia{..., video{..., asset->{..., metadata}}, image{..., image{..., metadata}}},
   featuredWork[]->,
   aboutSection{...}
 }`);
 
 export const CASE_STUDIES_QUERY = defineQuery(`*[_type == "caseStudy" && defined(slug.current)] | order(order asc) {
   _id, _type, title, "slug": slug.current, summary, category,
-  "coverImage": { "image": coverImage.image, "alt": coverImage.alt }, "clientName": client->name, year
+  "coverImage": { "image": coverImage.image{..., metadata}, "alt": coverImage.alt }, "clientName": client->name, year
 }`);
 
 export const CASE_STUDY_QUERY = defineQuery(`*[_type == "caseStudy" && slug.current == $slug][0]{
-  ..., "coverImage": { "image": coverImage.image, "alt": coverImage.alt }, "clientName": client->name, year, role, challenge, solution, outcome, team, timeline
+  ..., "coverImage": { "image": coverImage.image{..., metadata}, "alt": coverImage.alt }, "clientName": client->name, year, role, challenge, solution, outcome, team, timeline
 }`);
 
 export const BLOG_POSTS_QUERY = defineQuery(`*[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc) {
   _id, _type, title, "slug": slug.current, excerpt, publishedAt,
-  "coverImage": { "image": coverImage.image, "alt": coverImage.alt }
+  "coverImage": { "image": coverImage.image{..., metadata}, "alt": coverImage.alt }
 }`);
 
 export const BLOG_POST_QUERY = defineQuery(`*[_type == "blogPost" && slug.current == $slug][0]{
-  ..., "coverImage": { "image": coverImage.image, "alt": coverImage.alt },
-  body[]{..., _type == "sanityImage" => { "image": image, "alt": alt }}
+  ..., "coverImage": { "image": coverImage.image{..., metadata}, "alt": coverImage.alt },
+  body[]{..., _type == "sanityImage" => { "image": image{..., metadata}, "alt": alt }}
 }`);
 
 export const CLIENTS_QUERY = defineQuery(`*[_type == "client"] | order(name asc) {

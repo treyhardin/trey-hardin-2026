@@ -14,6 +14,10 @@ export interface SanityImageObject {
 		crop?: { top?: number; bottom?: number; left?: number; right?: number };
 		/** Sanity hotspot — the focal point center + size (0-1 range) */
 		hotspot?: { x?: number; y?: number; height?: number; width?: number };
+		/** Asset metadata for intrinsic dimensions (CLS prevention) */
+		metadata?: {
+			dimensions?: { width?: number; height?: number; aspectRatio?: number };
+		};
 	};
 	/** Alt text — filled in by the editor in Sanity Studio. */
 	alt?: string;
@@ -95,6 +99,10 @@ const blurDataURL = blurUp ? baseUrl.width(20).quality(50).blur(200).url() : und
 // Resolve alt text — prefer explicit prop, then image.alt, then empty string
 const resolvedAlt = Astro.props.alt ?? image.alt ?? '';
 
+// Extract intrinsic dimensions from metadata (CLS prevention)
+const intrinsicWidth = imageRef.metadata?.dimensions?.width;
+const intrinsicHeight = imageRef.metadata?.dimensions?.height;
+
 // Compute object-position from hotspot (focal point)
 // Sanity hotspot.x/y are 0-1 fractions representing the center of the focal rectangle
 const objectPosition = imageRef.hotspot?.x != null && imageRef.hotspot?.y != null
@@ -105,6 +113,9 @@ const objectPosition = imageRef.hotspot?.x != null && imageRef.hotspot?.y != nul
 const styles: Record<string, string> = {};
 if (aspectRatio !== 'auto') {
 	styles.aspectRatio = aspectRatio;
+} else if (intrinsicWidth && intrinsicHeight) {
+	// Use intrinsic dimensions as fallback aspect ratio
+	styles.aspectRatio = `${intrinsicWidth}/${intrinsicHeight}`;
 }
 if (objectFit !== 'fill') {
 	styles.objectFit = objectFit;
