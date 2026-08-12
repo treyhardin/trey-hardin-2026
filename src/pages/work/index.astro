@@ -20,13 +20,9 @@ const caseStudies = await getAllCaseStudies(perspectiveCookie);
 				<a href={`/work/${study.slug.current}`} class="work-card">
 					{study.coverImage && (
 						<div class="work-card-image">
-							<img
-								src={urlFor(study.coverImage).width(800).auto('format').url()}
-								alt={study.title}
-								loading="lazy"
-							/>
+							<SanityImage image={study.coverImage} alt={study.title} aspectRatio="16/10" />
 						</div>
-					)}
+						)}
 					<div class="work-card-content">
 						<div class="work-card-meta">
 							{study.client?.name && <span class="work-card-client">{study.client.name}</span>}

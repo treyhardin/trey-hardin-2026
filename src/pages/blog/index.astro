@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/base.astro';
 import { getAllBlogPosts } from '../../lib/sanity';
-import { urlFor } from '../../lib/image';
+import SanityImage from '../../components/SanityImage.astro';
 import { getDraftModeProps } from '../../sanity/lib/draft-mode';
 
 const { perspectiveCookie } = getDraftModeProps(Astro.cookies);
@@ -20,11 +20,7 @@ const posts = await getAllBlogPosts(perspectiveCookie);
 				<a href={`/blog/${post.slug}`} class="blog-card">
 					{post.coverImage && (
 						<div class="blog-card-image">
-							<img
-								src={urlFor(post.coverImage).width(800).auto('format').url()}
-								alt={post.title}
-								loading="lazy"
-							/>
+							<SanityImage image={post.coverImage} alt={post.title} aspectRatio="16/10" />
 						</div>
 					)}
 					<div class="blog-card-content">

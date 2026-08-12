@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/base.astro';
 import { getAllClients } from '../../lib/sanity';
-import { urlFor } from '../../lib/image';
+import SanityImage from '../../components/SanityImage.astro';
 import { getDraftModeProps } from '../../sanity/lib/draft-mode';
 
 const { perspectiveCookie } = getDraftModeProps(Astro.cookies);
@@ -27,11 +27,7 @@ const clients = await getAllClients(perspectiveCookie);
 					>
 						{client.logo && (
 							<div class="client-logo">
-								<img
-									src={urlFor(client.logo).width(200).auto('format').url()}
-									alt={`${client.name} logo`}
-									loading="lazy"
-								/>
+								<SanityImage image={client.logo} alt={`${client.name} logo`} aspectRatio="1/1" objectFit="contain" breakpoints={[100, 200]} />
 							</div>
 						)}
 						<h3>{client.name}</h3>

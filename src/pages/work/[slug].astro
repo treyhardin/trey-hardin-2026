@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/base.astro';
 import { getCaseStudyBySlug } from '../../lib/sanity';
 import { urlFor } from '../../lib/image';
+import SanityImage from '../../components/SanityImage.astro';
 import { getDraftModeProps } from '../../sanity/lib/draft-mode';
 
 export async function getStaticPaths() {
@@ -154,10 +155,7 @@ const bodyHtml = renderBody(study.body || []);
 			{study.role && <span class="case-study-role">{study.role}</span>}
 			{study.coverImage && (
 				<div class="case-study-cover">
-					<img
-						src={urlFor(study.coverImage).width(1400).auto('format').url()}
-						alt={study.title}
-					/>
+					<SanityImage image={study.coverImage} alt={study.title} aspectRatio="16/9" loading="eager" />
 				</div>
 			)}
 		</header>
@@ -206,17 +204,10 @@ const bodyHtml = renderBody(study.body || []);
 
 		.case-study-cover {
 			width: 100%;
-			aspect-ratio: 16 / 9;
 			overflow: hidden;
 			border-radius: var(--radius-md);
 			background: var(--color-bg-secondary);
 			margin-top: var(--space-lg);
-		}
-
-		.case-study-cover img {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
 		}
 
 		/* ── Rich content body ── */

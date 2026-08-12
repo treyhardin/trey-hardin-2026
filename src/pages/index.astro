@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/base.astro';
 import { getHomepage } from '../lib/sanity';
-import { urlFor } from '../lib/image';
 import { getDraftModeProps } from '../sanity/lib/draft-mode';
 
 const { perspectiveCookie } = getDraftModeProps(Astro.cookies);

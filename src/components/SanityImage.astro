@@ -1,0 +1,150 @@
+---
+import { urlFor } from '../lib/image';
+
+export interface SanityImageProps {
+	/** Sanity image asset reference (from schema field). Includes hotspot/crop when focal point is set. */
+	image: {
+		_ref?: string;
+		asset?: {
+			_ref: string;
+			assetDocumentId?: string;
+		};
+		alt?: string;
+		/** Sanity crop offsets (0-1 range for each edge) */
+		crop?: { top?: number; bottom?: number; left?: number; right?: number };
+		/** Sanity hotspot — the focal point center + size (0-1 range) */
+		hotspot?: { x?: number; y?: number; height?: number; width?: number };
+	};
+
+	/** Alt text (overrides image.alt if provided) */
+	alt?: string;
+
+	/** Responsive breakpoints in pixels. Defaults to [400, 600, 800, 1000, 1200, 1400]. */
+	breakpoints?: number[];
+
+	/** CSS aspect-ratio (e.g. "16/9", "1/1", "auto"). Defaults to "auto". */
+	aspectRatio?: string;
+
+	/** CSS object-fit value. Defaults to "cover". */
+	objectFit?: 'cover' | 'contain' | 'fill';
+
+	/** Explicit width override (px or CSS value). */
+	width?: number | string;
+
+	/** Explicit height override (px or CSS value). */
+	height?: number | string;
+
+	/** Loading strategy. Defaults to "lazy". Use "eager" for above-the-fold images. */
+	loading?: 'lazy' | 'eager';
+
+	/** Enable blur-up placeholder using Sanity's tiny thumbnail. Defaults to true. */
+	blurUp?: boolean;
+
+	/** CSS class for the wrapper element. */
+	className?: string;
+
+	/** Additional props forwarded to the <img> element. */
+	imgProps?: Record<string, string>;
+}
+
+const {
+	image,
+	alt,
+	breakpoints = [400, 600, 800, 1000, 1200, 1400],
+	aspectRatio = 'auto',
+	objectFit = 'cover',
+	width,
+	height,
+	loading = 'lazy',
+	blurUp = true,
+	className = '',
+	imgProps = {},
+} = Astro.props;
+
+// Get the asset reference ID — support both direct _ref and nested asset._ref
+const assetId = image._ref ?? image.asset?._ref ?? image.asset?.assetDocumentId;
+if (!assetId) {
+	throw new Error(`SanityImage: image asset reference not found. Received: ${JSON.stringify(image)}`);
+}
+
+// Pass full image object (with hotspot/crop) to urlFor so Sanity CDN crops around focal point
+const baseUrl = urlFor(image);
+
+// Generate srcset entries
+const srcsetEntries = breakpoints
+	.map((w) => `${baseUrl.width(w).auto('format').url()} ${w}w`)
+	.join(', ');
+
+// The largest image for the src attribute
+const src = baseUrl.width(breakpoints[breakpoints.length - 1]).auto('format').url();
+
+// Tiny thumbnail for blur-up placeholder
+const blurDataURL = blurUp ? baseUrl.width(20).quality(50).blur(200).url() : undefined;
+
+// Resolve alt text
+const resolvedAlt = alt ?? image.alt ?? '';
+
+// Compute object-position from hotspot (focal point)
+// Sanity hotspot.x/y are 0-1 fractions representing the center of the focal rectangle
+const objectPosition = image.hotspot?.x != null && image.hotspot?.y != null
+	? `${image.hotspot.x * 100}% ${image.hotspot.y * 100}%`
+	: undefined;
+
+// Build inline styles
+const styles: Record<string, string> = {};
+if (aspectRatio !== 'auto') {
+	styles.aspectRatio = aspectRatio;
+}
+if (objectFit !== 'fill') {
+	styles.objectFit = objectFit;
+}
+if (objectPosition) {
+	styles.objectPosition = objectPosition;
+}
+if (width) {
+	styles.width = typeof width === 'number' ? `${width}px` : width;
+}
+if (height) {
+	styles.height = typeof height === 'number' ? `${height}px` : height;
+}
+
+const styleAttr = Object.entries(styles).length
+	? Object.entries(styles).map(([k, v]) => `${k}: ${v}`).join('; ')
+	: undefined;
+---
+
+<picture class={`sanity-image ${className}`}>
+	<img
+		src={src}
+		srcset={srcsetEntries}
+		sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+		alt={resolvedAlt}
+		loading={loading}
+		decoding="async"
+		{...styleAttr ? { style: styleAttr } : {}}
+		{...imgProps}
+		{...blurDataURL ? { 'data-blur-up': blurDataURL } : {}}
+	/>
+</picture>
+
+<style is:inline>
+	.sanity-image {
+		display: block;
+		overflow: hidden;
+	}
+
+	.sanity-image img {
+		width: 100%;
+		height: 100%;
+		display: block;
+		transition: opacity 0.3s ease;
+	}
+
+	/* Blur-up placeholder */
+	.sanity-image img[data-blur-up] {
+		background-image: url(attr(data-blur-up));
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+	}
+</style>

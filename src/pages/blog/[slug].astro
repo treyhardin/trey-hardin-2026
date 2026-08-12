@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/base.astro';
 import { getBlogPostBySlug, getAllBlogPosts } from '../../lib/sanity';
 import { urlFor } from '../../lib/image';
+import SanityImage from '../../components/SanityImage.astro';
 import { getDraftModeProps } from '../../sanity/lib/draft-mode';
 
 export async function getStaticPaths() {
@@ -159,10 +160,7 @@ const bodyHtml = renderBody(post.body || []);
 			{post.excerpt && <p class="blog-post-excerpt">{post.excerpt}</p>}
 			{post.coverImage && (
 				<div class="blog-post-cover">
-					<img
-						src={urlFor(post.coverImage).width(1400).auto('format').url()}
-						alt={post.title}
-					/>
+					<SanityImage image={post.coverImage} alt={post.title} aspectRatio="16/9" loading="eager" />
 				</div>
 			)}
 		</header>
@@ -203,16 +201,9 @@ const bodyHtml = renderBody(post.body || []);
 
 		.blog-post-cover {
 			width: 100%;
-			aspect-ratio: 16 / 9;
 			overflow: hidden;
 			border-radius: var(--radius-md);
 			background: var(--color-bg-secondary);
-		}
-
-		.blog-post-cover img {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
 		}
 
 		:global(.blog-post-body) {
