@@ -4,11 +4,20 @@ import Base from '../layouts/base.astro';
 
 <Base>
 	<!-- Styleguide Content -->
-	<div class="styleguide-content constrained">
+	<div class="styleguide-content">
+
+		<!-- Page Header -->
+		<header class="sg-header">
+			<h1>Style Guide</h1>
+			<p class="sg-description">Design tokens, type scale, and reusable components for the portfolio.</p>
+		</header>
 
 		<!-- Typography -->
 		<section class="sg-section">
-			<div class="sg-label">Typography</div>
+			<div class="sg-section-header">
+				<div class="sg-label">Typography</div>
+				<div class="sg-section-desc">Headings, body text, captions, and utility type.</div>
+			</div>
 
 			<div class="sg-specimen">
 				<div class="sg-row"><span class="sg-key">H1</span><h1 class="sg-val">Heading One</h1></div>
@@ -20,7 +29,7 @@ import Base from '../layouts/base.astro';
 			</div>
 
 			<div class="sg-specimen">
-				<div class="sg-row"><span class="sg-key">Paragraph</span><p class="sg-val">The quick brown fox jumps over the lazy dog. Design decisions affect millions of users and hundreds of millions in revenue.</p></div>
+				<div class="sg-row"><span class="sg-key">Body</span><p class="sg-val">The quick brown fox jumps over the lazy dog. Design decisions affect millions of users and hundreds of millions in revenue.</p></div>
 				<div class="sg-row"><span class="sg-key">Caption</span><span class="sg-val sg-caption">Source: Trey Hardin portfolio, 2026</span></div>
 				<div class="sg-row"><span class="sg-key">Utility</span><span class="sg-val sg-utility">CATEGORY / SECTION</span></div>
 			</div>
@@ -28,7 +37,10 @@ import Base from '../layouts/base.astro';
 
 		<!-- Buttons -->
 		<section class="sg-section">
-			<div class="sg-label">Buttons</div>
+			<div class="sg-section-header">
+				<div class="sg-label">Buttons</div>
+				<div class="sg-section-desc">Primary, secondary, and ghost variants.</div>
+			</div>
 
 			<div class="sg-component-grid">
 				<div class="sg-component">
@@ -46,9 +58,41 @@ import Base from '../layouts/base.astro';
 			</div>
 		</section>
 
+		<!-- Badges -->
+		<section class="sg-section">
+			<div class="sg-section-header">
+				<div class="sg-label">Badges</div>
+				<div class="sg-section-desc">Small labels for categories and status.</div>
+			</div>
+
+			<div class="sg-component-row">
+				<span class="badge">Default</span>
+				<span class="badge badge-accent">Accent</span>
+				<span class="badge">Design</span>
+				<span class="badge">Engineering</span>
+				<span class="badge">Brand</span>
+			</div>
+		</section>
+
+		<!-- Links -->
+		<section class="sg-section">
+			<div class="sg-section-header">
+				<div class="sg-label">Links</div>
+				<div class="sg-section-desc">Inline links with hover states.</div>
+			</div>
+
+			<div class="sg-component-row" style="flex-direction: column; align-items: flex-start;">
+				<a href="#" class="link">Inline link example</a>
+				<a href="#" class="link">Another linked item</a>
+			</div>
+		</section>
+
 		<!-- Inputs -->
 		<section class="sg-section">
-			<div class="sg-label">Inputs</div>
+			<div class="sg-section-header">
+				<div class="sg-label">Inputs</div>
+				<div class="sg-section-desc">Text fields, textarea, select, checkboxes, and radio buttons.</div>
+			</div>
 
 			<div class="sg-form">
 				<div class="sg-field">
@@ -96,7 +140,10 @@ import Base from '../layouts/base.astro';
 
 		<!-- Accordion -->
 		<section class="sg-section">
-			<div class="sg-label">Accordion</div>
+			<div class="sg-section-header">
+				<div class="sg-label">Accordion</div>
+				<div class="sg-section-desc">Expandable content panels.</div>
+			</div>
 
 			<div class="accordion">
 				<div class="accordion-item">
@@ -129,53 +176,36 @@ import Base from '../layouts/base.astro';
 			</div>
 		</section>
 
-		<!-- Badges -->
-		<section class="sg-section">
-			<div class="sg-label">Badges</div>
-
-			<div class="sg-component-row">
-				<span class="badge">Default</span>
-				<span class="badge badge-accent">Accent</span>
-				<span class="badge">Design</span>
-				<span class="badge">Engineering</span>
-				<span class="badge">Brand</span>
-			</div>
-		</section>
-
-		<!-- Cards -->
-		<section class="sg-section">
-			<div class="sg-label">Cards</div>
-
-			<div class="sg-component-grid">
-				<div class="card">
-					<span class="badge" style="margin-bottom: var(--space-3);">Case Study</span>
-					<h3>Ecommerce Redesign</h3>
-					<p>Leading a complete redesign of the checkout experience, resulting in a 12% increase in conversion rates.</p>
-				</div>
-				<div class="card">
-					<span class="badge" style="margin-bottom: var(--space-3);">Project</span>
-					<h3>Design System</h3>
-					<p>Building a scalable component library used across 14 product teams and 3 platforms.</p>
-				</div>
-			</div>
-		</section>
-
 		<!-- Divider -->
 		<section class="sg-section">
-			<div class="sg-label">Divider</div>
+			<div class="sg-section-header">
+				<div class="sg-label">Divider</div>
+				<div class="sg-section-desc">Horizontal rule for content separation.</div>
+			</div>
 
-			<p style="margin-bottom: var(--space-4);">Content above the divider.</p>
+			<p>Content above the divider.</p>
 			<hr class="divider" />
 			<p>Content below the divider.</p>
 		</section>
 
-		<!-- Links -->
+		<!-- Cards -->
 		<section class="sg-section">
-			<div class="sg-label">Links</div>
+			<div class="sg-section-header">
+				<div class="sg-label">Cards</div>
+				<div class="sg-section-desc">Compound components for case studies and projects.</div>
+			</div>
 
-			<div class="sg-component-row" style="flex-direction: column; align-items: flex-start;">
-				<a href="#" class="link">Inline link example</a>
-				<a href="#" class="link">Another linked item</a>
+			<div class="sg-component-grid">
+				<div class="card">
+					<span class="badge">Case Study</span>
+					<h3>Ecommerce Redesign</h3>
+					<p>Leading a complete redesign of the checkout experience, resulting in a 12% increase in conversion rates.</p>
+				</div>
+				<div class="card">
+					<span class="badge">Project</span>
+					<h3>Design System</h3>
+					<p>Building a scalable component library used across 14 product teams and 3 platforms.</p>
+				</div>
 			</div>
 		</section>
 
@@ -184,12 +214,46 @@ import Base from '../layouts/base.astro';
 	<style is:inline>
 		/* ── Styleguide Layout ── */
 		.styleguide-content {
-			padding-top: var(--space-20);
-			padding-bottom: var(--space-32);
+			padding-top: var(--space-xl);
+			padding-bottom: var(--space-3xl);
 		}
 
+		/* ── Page Header ── */
+		.sg-header {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-xs);
+			margin-bottom: var(--space-xl);
+			padding-bottom: var(--space-lg);
+			border-bottom: var(--border-width-1) solid var(--color-border);
+		}
+
+		.sg-header h1 {
+			font-family: var(--font-heading);
+			font-size: var(--font-size-h2);
+			font-weight: var(--font-weight-heading);
+			letter-spacing: var(--letter-spacing-heading);
+		}
+
+		.sg-description {
+			font-size: var(--font-size-body);
+			color: var(--color-fg-secondary);
+			max-width: 40ch;
+		}
+
+		/* ── Section Headers ── */
 		.sg-section {
-			margin-bottom: var(--space-24);
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-sm);
+			margin-bottom: var(--space-xl);
+		}
+
+		.sg-section-header {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-2xs);
+			margin-bottom: var(--space-md);
 		}
 
 		.sg-label {
@@ -199,20 +263,24 @@ import Base from '../layouts/base.astro';
 			text-transform: uppercase;
 			letter-spacing: var(--letter-spacing-utility);
 			color: var(--color-fg-secondary);
-			margin-bottom: var(--space-6);
+		}
+
+		.sg-section-desc {
+			font-size: var(--font-size-body);
+			color: var(--color-fg-tertiary);
 		}
 
 		/* ── Specimen Rows ── */
 		.sg-specimen {
 			display: flex;
 			flex-direction: column;
-			gap: var(--space-5);
+			gap: var(--space-md);
 		}
 
 		.sg-row {
 			display: grid;
 			grid-template-columns: 80px 1fr;
-			gap: var(--space-4);
+			gap: var(--space-sm);
 			align-items: baseline;
 		}
 
@@ -245,13 +313,13 @@ import Base from '../layouts/base.astro';
 		.sg-component-grid {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-			gap: var(--space-6);
+			gap: var(--space-md);
 		}
 
 		.sg-component {
 			display: flex;
 			flex-direction: column;
-			gap: var(--space-3);
+			gap: var(--space-xs);
 		}
 
 		.sg-component-label {
@@ -263,29 +331,28 @@ import Base from '../layouts/base.astro';
 		.sg-component-row {
 			display: flex;
 			flex-wrap: wrap;
-			gap: var(--space-2);
+			gap: var(--space-2xs);
 		}
 
 		/* ── Form Layout ── */
 		.sg-form {
 			display: flex;
 			flex-direction: column;
-			gap: var(--space-5);
+			gap: var(--space-md);
 			max-width: 480px;
 		}
 
 		.sg-field {
 			display: flex;
 			flex-direction: column;
-			gap: var(--space-1);
+			gap: var(--space-2xs);
 		}
 
 		.sg-checkbox-group,
 		.sg-radio-group {
 			flex-direction: row;
-			gap: var(--space-4);
+			gap: var(--space-sm);
 		}
 	</style>
-
 
 </Base>
