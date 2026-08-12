@@ -16,9 +16,11 @@ interface SanityImageShape {
 /** The video asset reference from Sanity file field */
 interface SanityVideoShape {
 	asset: {
-		_ref: string;
-		url: string;
+		_ref?: string;
+		_id?: string;
+		url?: string;
 		mimeType?: string;
+		extension?: string;
 	};
 }
 
@@ -47,6 +49,9 @@ export interface SanityMediaProps {
 	/** Loop video. Defaults to false. */
 	loop?: boolean;
 
+	/** Show native video controls. Defaults to true. */
+	showControls?: boolean;
+
 	/** CSS class for the wrapper element. */
 	className?: string;
 }
@@ -59,10 +64,11 @@ const {
 	autoplay = true,
 	muted = true,
 	loop = false,
+	showControls = true,
 	className = '',
 } = Astro.props;
 
-const hasVideo = !!media.video?.asset?._ref;
+const hasVideo = !!media.video?.asset?._ref || !!media.video?.asset?._id;
 const hasImage = !!media.image?.image?.asset?._ref;
 
 // If neither video nor image, render nothing
@@ -70,10 +76,15 @@ if (!hasVideo && !hasImage) {
 	return null;
 }
 
-// Resolve video URL via Sanity CDN
-const videoUrl = hasVideo
-	? urlFor({ _ref: media.video!.asset._ref }).url()
-	: undefined;
+// Resolve video URL — use direct URL from dereferenced asset, or construct via urlFor
+const videoUrl = media.video?.asset?.url
+	? media.video.asset.url
+	: media.video?.asset?._ref
+		? urlFor({ _ref: media.video.asset._ref }).url()
+		: undefined;
+
+// Resolve video MIME type from asset
+const videoMimeType = media.video?.asset?.mimeType ?? 'video/mp4';
 
 // Resolve poster URL from the sanityImage when both video + image exist
 const posterUrl = hasVideo && hasImage
@@ -86,15 +97,15 @@ const posterUrl = hasVideo && hasImage
 	<div class={`sanity-media sanity-media--video ${className}`} data-aspect={aspectRatio}>
 		<video
 			class="sanity-media__video"
-			{...{ controls: true }}
-			{...{ muted: muted ? '' : undefined }}
-			{...{ playsinline: '' }}
-			{...{ preload: 'metadata' }}
-			{...{ loop: loop ? '' : undefined }}
-			{...{ autoplay: autoplay ? '' : undefined }}
-			{...posterUrl ? { poster: posterUrl } : {}}
+			controls={showControls}
+			muted={muted}
+			playsinline
+			preload="metadata"
+			loop={loop}
+			autoplay={autoplay}
+			poster={posterUrl}
 		>
-			<source src={videoUrl} type="video/mp4" />
+			<source src={videoUrl} type={videoMimeType} />
 		</video>
 
 		{hasImage && (
@@ -167,6 +178,12 @@ const posterUrl = hasVideo && hasImage
 			poster.style.opacity = '0';
 			poster.style.pointerEvents = 'none';
 		};
+
+		// If video is already playing (autoplay started before script ran), fade immediately
+		if (!video.paused) {
+			hidePoster();
+			return;
+		}
 
 		video.addEventListener('play', hidePoster, { once: true });
 		video.addEventListener('playing', hidePoster, { once: true });
