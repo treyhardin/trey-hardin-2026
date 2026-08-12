@@ -51,7 +51,7 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: var(--space-4) var(--page-margin);
+		padding: var(--space-sm) var(--page-margin);
 		background: color-mix(in srgb, var(--color-bg) 85%, transparent);
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
@@ -73,7 +73,7 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 
 	.site-nav {
 		display: flex;
-		gap: var(--space-6);
+		gap: var(--space-lg);
 	}
 
 	.nav-link {
@@ -109,8 +109,8 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 	.contact-trigger {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--space-1);
-		padding: var(--space-2) var(--space-3);
+		gap: var(--space-3xs);
+		padding: var(--space-2xs) var(--space-xs);
 		font-size: var(--font-size-utility);
 		font-weight: var(--font-weight-utility);
 		text-transform: uppercase;
@@ -135,8 +135,8 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 	}
 
 	.contact-trigger-arrow {
-		width: var(--space-4);
-		height: var(--space-4);
+		width: var(--space-sm);
+		height: var(--space-sm);
 		transition: transform var(--transition-slow);
 	}
 

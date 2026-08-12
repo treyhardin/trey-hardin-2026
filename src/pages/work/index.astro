@@ -53,14 +53,14 @@ const caseStudies = await getAllCaseStudies(perspectiveCookie);
 		}
 
 		.work-header {
-			margin-bottom: 4rem;
+			margin-bottom: var(--space-xl);
 		}
 
 		.work-header h1 {
 			font-size: var(--font-size-h2);
 			font-weight: 700;
 			letter-spacing: -0.02em;
-			margin-bottom: 0.5rem;
+			margin-bottom: var(--space-2xs);
 		}
 
 		.work-subtitle {
@@ -70,7 +70,7 @@ const caseStudies = await getAllCaseStudies(perspectiveCookie);
 
 		.work-grid {
 			display: grid;
-			gap: 3rem;
+			gap: var(--space-lg);
 		}
 
 		.work-card {
@@ -78,9 +78,9 @@ const caseStudies = await getAllCaseStudies(perspectiveCookie);
 			color: inherit;
 			display: grid;
 			grid-template-columns: 1.2fr 1fr;
-			gap: 2rem;
+			gap: var(--space-lg);
 			align-items: start;
-			padding-bottom: 3rem;
+			padding-bottom: var(--space-lg);
 			border-bottom: 1px solid var(--color-border);
 			transition: opacity 0.2s ease;
 		}
@@ -109,12 +109,12 @@ const caseStudies = await getAllCaseStudies(perspectiveCookie);
 		.work-card-content {
 			display: flex;
 			flex-direction: column;
-			gap: 0.75rem;
+			gap: var(--space-xs);
 		}
 
-		.work-card-meta {
+		.work-card-tags {
 			display: flex;
-			gap: 1rem;
+			gap: var(--space-sm);
 			align-items: center;
 			font-size: var(--font-size-sm);
 			text-transform: uppercase;
@@ -125,7 +125,7 @@ const caseStudies = await getAllCaseStudies(perspectiveCookie);
 
 		.work-card-client::after {
 			content: '·';
-			margin-left: 0.75rem;
+			margin-left: var(--space-xs);
 		}
 
 		.work-card-title {
@@ -150,7 +150,7 @@ const caseStudies = await getAllCaseStudies(perspectiveCookie);
 
 		.work-empty {
 			text-align: center;
-			padding: 4rem 0;
+			padding: var(--space-xl) 0;
 			color: var(--color-fg-secondary);
 		}
 
@@ -158,10 +158,10 @@ const caseStudies = await getAllCaseStudies(perspectiveCookie);
 			color: var(--color-accent);
 		}
 
-		@media (max-width: 640px) {
-			.work-card {
+		@media (max-width: 768px) {
+			.work-grid {
 				grid-template-columns: 1fr;
-				gap: 1rem;
+				gap: var(--space-sm);
 			}
 		}
 	</style>
