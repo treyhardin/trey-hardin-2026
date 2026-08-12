@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/base.astro';
+import SanityMedia from '../components/SanityMedia.astro';
 import { getHomepage } from '../lib/sanity';
 import { getDraftModeProps } from '../sanity/lib/draft-mode';
 
@@ -9,6 +10,16 @@ const homepage = await getHomepage(perspectiveCookie);
 
 <BaseLayout>
 	<section class="hero">
+		{homepage?.heroMedia && (
+			<SanityMedia
+				media={homepage.heroMedia}
+				aspectRatio="16/9"
+				loading="eager"
+				autoplay={true}
+				muted={true}
+				loop={true}
+			/>
+		)}
 		<h1>{homepage?.headline || 'Trey Hardin'}</h1>
 		<p class="hero-sub">{homepage?.subheadline}</p>
 		{homepage?.bio && <p class="hero-bio">{homepage.bio}</p>}

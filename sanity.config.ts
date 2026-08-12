@@ -245,6 +245,12 @@ export default defineConfig({
 				icon: DocumentIcon,
 				fields: [
 					defineField({
+						name: 'heroMedia',
+						title: 'Hero Media',
+						type: 'sanityMedia',
+						description: 'Optional video or image (or both) for the hero section',
+					}),
+					defineField({
 						name: 'headline',
 						title: 'Headline',
 						type: 'string',
