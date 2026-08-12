@@ -27,7 +27,7 @@ const clients = await getAllClients(perspectiveCookie);
 					>
 						{client.logo && (
 							<div class="client-logo">
-								<SanityImage image={client.logo} alt={`${client.name} logo`} aspectRatio="1/1" objectFit="contain" breakpoints={[100, 200]} />
+								<SanityImage image={client.logo} aspectRatio="1/1" objectFit="contain" breakpoints={[100, 200]} />
 							</div>
 						)}
 						<h3>{client.name}</h3>

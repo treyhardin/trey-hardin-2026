@@ -81,8 +81,11 @@ function renderBody(body: any[]) {
 	while (i < body.length) {
 		const block = body[i];
 
-		if (block._type === 'image') {
-			html += `<figure class="rt-image"><img src="${urlFor(block).width(1200).auto('format').url()}" alt="${block.alt || ''}" /></figure>`;
+		if (block._type === 'sanityImage') {
+			const imgSrc = block.image?._id
+				? urlFor(block.image).width(1200).auto('format').url()
+				: urlFor(block.image).width(1200).auto('format').url();
+			html += `<figure class="rt-image"><img src="${imgSrc}" alt="${block.alt || ''}" /></figure>`;
 			i++;
 			continue;
 		}
@@ -160,7 +163,7 @@ const bodyHtml = renderBody(post.body || []);
 			{post.excerpt && <p class="blog-post-excerpt">{post.excerpt}</p>}
 			{post.coverImage && (
 				<div class="blog-post-cover">
-					<SanityImage image={post.coverImage} alt={post.title} aspectRatio="16/9" loading="eager" />
+					<SanityImage image={post.coverImage} aspectRatio="16/9" loading="eager" />
 				</div>
 			)}
 		</header>

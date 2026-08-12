@@ -79,6 +79,31 @@ const blockStyles = [
 	{ title: 'Code', value: 'code' },
 ];
 
+// ── Reusable: Sanity Image Object ──
+// Wraps a Sanity image asset with an alt-text field (and future fields like
+// aspect ratio, caption, etc.). Used everywhere we need an image on the site.
+const sanityImageObject = defineType({
+	name: 'sanityImage',
+	title: 'Image',
+	type: 'object',
+	fields: [
+		defineField({
+			name: 'image',
+			title: 'Image',
+			type: 'image',
+			options: { hotspot: true },
+			description: 'Upload or select an image asset',
+		}),
+		defineField({
+			name: 'alt',
+			title: 'Alt Text',
+			type: 'string',
+			description: 'Descriptive text for accessibility — what is shown, not what it means',
+			validation: (rule) => rule.required(),
+		}),
+	],
+});
+
 export default defineConfig({
 	name: 'portfolio-2026',
 	title: 'Portfolio CMS',
@@ -261,8 +286,7 @@ export default defineConfig({
 					defineField({
 						name: 'coverImage',
 						title: 'Cover Image',
-						type: 'image',
-						options: { hotspot: true },
+						type: 'sanityImage',
 					}),
 					defineField({
 						name: 'summary',
@@ -294,8 +318,7 @@ export default defineConfig({
 								styles: blockStyles,
 							}),
 							defineArrayMember({
-								type: 'image',
-								options: { hotspot: true },
+								type: 'sanityImage',
 							}),
 						],
 					}),
@@ -339,8 +362,7 @@ export default defineConfig({
 					defineField({
 						name: 'logo',
 						title: 'Logo',
-						type: 'image',
-						options: { hotspot: true },
+						type: 'sanityImage',
 						description: 'Client logo — preferably on a transparent background',
 					}),
 					defineField({
@@ -389,8 +411,7 @@ export default defineConfig({
 					defineField({
 						name: 'coverImage',
 						title: 'Cover Image',
-						type: 'image',
-						options: { hotspot: true },
+						type: 'sanityImage',
 					}),
 					defineField({
 						name: 'excerpt',
@@ -415,8 +436,7 @@ export default defineConfig({
 								styles: blockStyles,
 							}),
 							defineArrayMember({
-								type: 'image',
-								options: { hotspot: true },
+								type: 'sanityImage',
 							}),
 						],
 					}),
@@ -438,6 +458,7 @@ export default defineConfig({
 			}),
 
 			// ── Reusable types ──
+			sanityImageObject,
 			linkObject,
 			linkList,
 		],

@@ -1,23 +1,27 @@
 ---
 import { urlFor } from '../lib/image';
 
-export interface SanityImageProps {
-	/** Sanity image asset reference (from schema field). Includes hotspot/crop when focal point is set. */
+/** A sanityImage object from Sanity: { image: <image ref>, alt: <string> } */
+export interface SanityImageObject {
+	/** The actual Sanity image asset reference. Includes hotspot/crop when focal point is set. */
 	image: {
 		_ref?: string;
 		asset?: {
 			_ref: string;
 			assetDocumentId?: string;
 		};
-		alt?: string;
 		/** Sanity crop offsets (0-1 range for each edge) */
 		crop?: { top?: number; bottom?: number; left?: number; right?: number };
 		/** Sanity hotspot — the focal point center + size (0-1 range) */
 		hotspot?: { x?: number; y?: number; height?: number; width?: number };
 	};
-
-	/** Alt text (overrides image.alt if provided) */
+	/** Alt text — filled in by the editor in Sanity Studio. */
 	alt?: string;
+}
+
+export interface SanityImageProps {
+	/** The sanityImage object from Sanity (contains `image` ref + `alt` text). */
+	image: SanityImageObject;
 
 	/** Responsive breakpoints in pixels. Defaults to [400, 600, 800, 1000, 1200, 1400]. */
 	breakpoints?: number[];
@@ -49,7 +53,6 @@ export interface SanityImageProps {
 
 const {
 	image,
-	alt,
 	breakpoints = [400, 600, 800, 1000, 1200, 1400],
 	aspectRatio = 'auto',
 	objectFit = 'cover',
@@ -61,14 +64,22 @@ const {
 	imgProps = {},
 } = Astro.props;
 
-// Get the asset reference ID — support both direct _ref and nested asset._ref
-const assetId = image._ref ?? image.asset?._ref ?? image.asset?.assetDocumentId;
+// The nested image asset reference (from sanityImage.image field)
+const imageRef = image.image;
+
+// Early return if no image — happens when the sanityImage object exists but has no asset
+if (!imageRef) {
+	return null;
+}
+
+// Get the asset reference ID — support direct _ref, resolved asset._id, or nested asset._ref
+const assetId = imageRef._ref ?? imageRef._id ?? imageRef.asset?._ref;
 if (!assetId) {
 	throw new Error(`SanityImage: image asset reference not found. Received: ${JSON.stringify(image)}`);
 }
 
 // Pass full image object (with hotspot/crop) to urlFor so Sanity CDN crops around focal point
-const baseUrl = urlFor(image);
+const baseUrl = urlFor(imageRef);
 
 // Generate srcset entries
 const srcsetEntries = breakpoints
@@ -81,13 +92,13 @@ const src = baseUrl.width(breakpoints[breakpoints.length - 1]).auto('format').ur
 // Tiny thumbnail for blur-up placeholder
 const blurDataURL = blurUp ? baseUrl.width(20).quality(50).blur(200).url() : undefined;
 
-// Resolve alt text
-const resolvedAlt = alt ?? image.alt ?? '';
+// Resolve alt text — prefer explicit prop, then image.alt, then empty string
+const resolvedAlt = Astro.props.alt ?? image.alt ?? '';
 
 // Compute object-position from hotspot (focal point)
 // Sanity hotspot.x/y are 0-1 fractions representing the center of the focal rectangle
-const objectPosition = image.hotspot?.x != null && image.hotspot?.y != null
-	? `${image.hotspot.x * 100}% ${image.hotspot.y * 100}%`
+const objectPosition = imageRef.hotspot?.x != null && imageRef.hotspot?.y != null
+	? `${imageRef.hotspot.x * 100}% ${imageRef.hotspot.y * 100}%`
 	: undefined;
 
 // Build inline styles

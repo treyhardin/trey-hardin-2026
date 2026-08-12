@@ -9,23 +9,25 @@ export const HOMEPAGE_QUERY = defineQuery(`*[_type == "homepage"][0]{
 
 export const CASE_STUDIES_QUERY = defineQuery(`*[_type == "caseStudy" && defined(slug.current)] | order(order asc) {
   _id, _type, title, "slug": slug.current, summary, category,
-  "coverImage": coverImage->, "clientName": client->name, year
+  "coverImage": { "image": coverImage.image, "alt": coverImage.alt }, "clientName": client->name, year
 }`);
 
 export const CASE_STUDY_QUERY = defineQuery(`*[_type == "caseStudy" && slug.current == $slug][0]{
-  ..., coverImage->, "clientName": client->name, year, role, challenge, solution, outcome, team, timeline
+  ..., "coverImage": { "image": coverImage.image, "alt": coverImage.alt }, "clientName": client->name, year, role, challenge, solution, outcome, team, timeline
 }`);
 
 export const BLOG_POSTS_QUERY = defineQuery(`*[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc) {
-  _id, _type, title, "slug": slug.current, publishedAt, excerpt, category
+  _id, _type, title, "slug": slug.current, excerpt, publishedAt,
+  "coverImage": { "image": coverImage.image, "alt": coverImage.alt }
 }`);
 
 export const BLOG_POST_QUERY = defineQuery(`*[_type == "blogPost" && slug.current == $slug][0]{
-  ..., body[]{..., _type == "image" => {..., asset->{ _id, url, metadata { lqip, dimensions } }, alt}}
+  ..., "coverImage": { "image": coverImage.image, "alt": coverImage.alt },
+  body[]{..., _type == "sanityImage" => { "image": image, "alt": alt }}
 }`);
 
 export const CLIENTS_QUERY = defineQuery(`*[_type == "client"] | order(name asc) {
-  _id, _type, name, logo->, website, industry
+  _id, _type, name, "logo": { "image": logo.image, "alt": logo.alt }, website, industry
 }`);
 
 export const HEADER_QUERY = defineQuery(`*[_type == "header"][0]{

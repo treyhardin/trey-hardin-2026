@@ -82,8 +82,11 @@ function renderBody(body: any[]) {
 	while (i < body.length) {
 		const block = body[i];
 
-		if (block._type === 'image') {
-			html += `<figure class="rt-image"><img src="${urlFor(block).width(1200).auto('format').url()}" alt="${block.alt || ''}" /></figure>`;
+		if (block._type === 'sanityImage') {
+			const imgSrc = block.image?._id
+				? urlFor(block.image).width(1200).auto('format').url()
+				: urlFor(block.image).width(1200).auto('format').url();
+			html += `<figure class="rt-image"><img src="${imgSrc}" alt="${block.alt || ''}" /></figure>`;
 			i++;
 			continue;
 		}
@@ -155,7 +158,7 @@ const bodyHtml = renderBody(study.body || []);
 			{study.role && <span class="case-study-role">{study.role}</span>}
 			{study.coverImage && (
 				<div class="case-study-cover">
-					<SanityImage image={study.coverImage} alt={study.title} aspectRatio="16/9" loading="eager" />
+					<SanityImage image={study.coverImage} aspectRatio="16/9" loading="eager" />
 				</div>
 			)}
 		</header>
