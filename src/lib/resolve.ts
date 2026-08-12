@@ -6,7 +6,7 @@ import { defineLocations } from 'sanity/presentation';
  * selects a document in the Studio.
  */
 export const resolve = {
-  documents: {
+  locations: {
     header: defineLocations({
       select: { title: 'links.text' },
       resolve: (doc) => ({

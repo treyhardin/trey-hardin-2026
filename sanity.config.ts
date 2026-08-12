@@ -66,6 +66,19 @@ const linkList = defineType({
 	validation: (rule) => rule.min(1).error('At least one link is required'),
 });
 
+// Portable Text block styles — all headings, blockquote, and code blocks.
+const blockStyles = [
+	{ title: 'Normal', value: 'normal' },
+	{ title: 'H1', value: 'h1' },
+	{ title: 'H2', value: 'h2' },
+	{ title: 'H3', value: 'h3' },
+	{ title: 'H4', value: 'h4' },
+	{ title: 'H5', value: 'h5' },
+	{ title: 'H6', value: 'h6' },
+	{ title: 'Blockquote', value: 'blockquote' },
+	{ title: 'Code', value: 'code' },
+];
+
 export default defineConfig({
 	name: 'portfolio-2026',
 	title: 'Portfolio CMS',
@@ -93,7 +106,7 @@ export default defineConfig({
 				'https://trey-hardin-2026.pages.dev',
 				'https://staging.treyhardin.com',
 			],
-		}, { previewUrlSecret }),
+		}),
 	],
 
 	schema: {
@@ -237,9 +250,9 @@ export default defineConfig({
 							source: 'title',
 							maxLength: 96,
 						},
-						validation: (rule) => rule.required().unique(),
-						}),
-						defineField({
+						validation: (rule) => rule.required(),
+					}),
+					defineField({
 						name: 'client',
 						title: 'Client',
 						type: 'reference',
@@ -276,7 +289,10 @@ export default defineConfig({
 						title: 'Body',
 						type: 'array',
 						of: [
-							defineArrayMember({ type: 'block' }),
+							defineArrayMember({
+								type: 'block',
+								styles: blockStyles,
+							}),
 							defineArrayMember({
 								type: 'image',
 								options: { hotspot: true },
@@ -344,83 +360,86 @@ export default defineConfig({
 					prepare({ title, subtitle, media }) {
 						return { title, subtitle, media };
 					},
-						},
-				}),
+				},
+			}),
 
-				// ── Blog Post ──
-				defineType({
-					name: 'blogPost',
-					title: 'Blog Post',
-					type: 'document',
-					icon: EditIcon,
-					fields: [
-						defineField({
-							name: 'title',
-							title: 'Title',
-							type: 'string',
-							validation: (rule) => rule.required(),
-						}),
-						defineField({
-							name: 'slug',
-							title: 'Slug',
-							type: 'slug',
-							options: {
-								source: 'title',
-								maxLength: 96,
-							},
-							validation: (rule) => rule.required().unique(),
-							}),
-							defineField({
-							name: 'coverImage',
-							title: 'Cover Image',
-							type: 'image',
-							options: { hotspot: true },
-							}),
-							defineField({
-							name: 'excerpt',
-							title: 'Excerpt',
-							type: 'text',
-							rows: 3,
-							description: 'Short summary shown on the listing page',
-							validation: (rule) => rule.max(300).warning('Keep it under 300 characters'),
-						}),
-						defineField({
-							name: 'publishedAt',
-							title: 'Published Date',
-							type: 'date',
-						}),
-						defineField({
-							name: 'body',
-							title: 'Body',
-							type: 'array',
-							of: [
-								defineArrayMember({ type: 'block' }),
-								defineArrayMember({
-									type: 'image',
-									options: { hotspot: true },
-								}),
-							],
-						}),
-					],
-					preview: {
-						select: {
-							title: 'title',
-							date: 'publishedAt',
-							media: 'coverImage',
+			// ── Blog Post ──
+			defineType({
+				name: 'blogPost',
+				title: 'Blog Post',
+				type: 'document',
+				icon: EditIcon,
+				fields: [
+					defineField({
+						name: 'title',
+						title: 'Title',
+						type: 'string',
+						validation: (rule) => rule.required(),
+					}),
+					defineField({
+						name: 'slug',
+						title: 'Slug',
+						type: 'slug',
+						options: {
+							source: 'title',
+							maxLength: 96,
 						},
-						prepare({ title, date, media }) {
-							return {
-								title,
-								subtitle: date ? new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unpublished',
-								media,
-							};
-						},
+						validation: (rule) => rule.required(),
+					}),
+					defineField({
+						name: 'coverImage',
+						title: 'Cover Image',
+						type: 'image',
+						options: { hotspot: true },
+					}),
+					defineField({
+						name: 'excerpt',
+						title: 'Excerpt',
+						type: 'text',
+						rows: 3,
+						description: 'Short summary shown on the listing page',
+						validation: (rule) => rule.max(300).warning('Keep it under 300 characters'),
+					}),
+					defineField({
+						name: 'publishedAt',
+						title: 'Published Date',
+						type: 'datetime',
+					}),
+					defineField({
+						name: 'body',
+						title: 'Body',
+						type: 'array',
+						of: [
+							defineArrayMember({
+								type: 'block',
+								styles: blockStyles,
+							}),
+							defineArrayMember({
+								type: 'image',
+								options: { hotspot: true },
+							}),
+						],
+					}),
+				],
+				preview: {
+					select: {
+						title: 'title',
+						date: 'publishedAt',
+						media: 'coverImage',
 					},
-				}),
+					prepare({ title, date, media }) {
+						return {
+							title,
+							subtitle: date ? new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unpublished',
+							media,
+						};
+					},
+				},
+			}),
 
 			// ── Reusable types ──
 			linkObject,
 			linkList,
-			],
-		},
-	});
+		],
+	},
+});
