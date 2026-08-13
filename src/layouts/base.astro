@@ -2,7 +2,7 @@
 import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import ContactDrawer from '../components/ContactDrawer.astro';
-import { getHeader, getFooter } from '../lib/sanity';
+import { getHeader, getFooter, client } from '../lib/sanity';
 import { VisualEditingComponent as VisualEditing } from '@sanity/astro/visual-editing/component';
 import { perspectiveCookieName } from '@sanity/preview-url-secret/constants';
 
@@ -10,9 +10,20 @@ const enableVisualEditing = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED
 const header = await getHeader();
 const footer = await getFooter();
 
-// Meta tag values (kept as constants to avoid [object Object] from <slot> in attribute expressions)
-const siteTitle = 'Trey Hardin — Design Lead';
-const siteDescription = 'Design lead with 10+ years bridging creative, engineering, and brand across large-scale ecommerce.';
+// SEO props from child pages
+const { seo } = Astro.props;
+
+// Resolve final meta values — page-level SEO overrides defaults
+const defaultTitle = 'Trey Hardin — Design Lead';
+const defaultDescription = 'Design lead with 10+ years bridging creative, engineering, and brand across large-scale ecommerce.';
+const metaTitle = seo?.metaTitle || defaultTitle;
+const metaDescription = seo?.metaDescription || defaultDescription;
+
+// Build OG image URL from seo.ogImage when present
+let ogImageUrl: string | undefined;
+if (seo?.ogImage?.image?.asset?._ref) {
+    ogImageUrl = client.assets().image(seo.ogImage.image.asset._ref).url();
+}
 ---
 
 <!doctype html>
@@ -30,18 +41,21 @@ const siteDescription = 'Design lead with 10+ years bridging creative, engineeri
 	<meta name="generator" content={Astro.generator} />
 	<ClientRouter />
 	<title>
-		<slot name="title">{siteTitle}</slot>
+		<slot name="title">{metaTitle}</slot>
 	</title>
-	<meta name="description" content={siteDescription} />
+	<meta name="description" content={metaDescription} />
+	{seo?.noindex && <meta name="robots" content="noindex" />}
 	<!-- Open Graph -->
-	<meta property="og:title" content={siteTitle} />
-	<meta property="og:description" content={siteDescription} />
+	<meta property="og:title" content={metaTitle} />
+	<meta property="og:description" content={metaDescription} />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content={Astro.url.href} />
+	{ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
 	<!-- Twitter -->
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content={siteTitle} />
-	<meta name="twitter:description" content={siteDescription} />
+	<meta name="twitter:title" content={metaTitle} />
+	<meta name="twitter:description" content={metaDescription} />
+	{ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
 	<style is:global is:inline>
 		/* ── Font Faces ── */
 

@@ -169,7 +169,7 @@ function renderBody(body: any[]) {
 const bodyHtml = renderBody(study.body || []);
 ---
 
-<BaseLayout>
+<BaseLayout seo={study?.seo}>
 	<article class="case-study">
 		<header class="case-study-header">
 			{study.client?.name && <span class="case-study-client">{study.client.name}</span>}

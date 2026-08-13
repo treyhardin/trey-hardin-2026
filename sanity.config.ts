@@ -143,6 +143,57 @@ const sanityMediaObject = defineType({
 	},
 });
 
+// ── Reusable: SEO Object ──
+// Per-page SEO meta controls: title, description, Open Graph image, and noindex flag.
+// When a page omits this field, the layout falls back to site-wide defaults.
+const seoObject = defineType({
+	name: 'seoObject',
+	title: 'SEO Settings',
+	type: 'object',
+	fields: [
+		defineField({
+			name: 'metaTitle',
+			title: 'Meta Title',
+			type: 'string',
+			description: 'Title shown in search results and browser tabs (leave blank for default)',
+			validation: (rule) => rule.max(60).warning('Keep under 60 characters for best results'),
+		}),
+		defineField({
+			name: 'metaDescription',
+			title: 'Meta Description',
+			type: 'text',
+			rows: 3,
+			description: 'Description shown in search results (leave blank for default)',
+			validation: (rule) => rule.max(160).warning('Keep under 160 characters for best results'),
+		}),
+		defineField({
+			name: 'ogImage',
+			title: 'Social Preview Image',
+			type: 'sanityImage',
+			description: 'Image shown when this page is shared on social media',
+		}),
+		defineField({
+			name: 'noindex',
+			title: 'Hide from Search Engines',
+			type: 'boolean',
+			initialValue: false,
+			description: 'When enabled, search engines will not index this page',
+		}),
+	],
+	preview: {
+		select: {
+			title: 'metaTitle',
+			subtitle: 'metaDescription',
+		},
+		prepare({ title, subtitle }) {
+			return {
+				title: title || 'SEO Settings',
+				subtitle: subtitle || 'Using defaults',
+			};
+		},
+	},
+});
+
 export default defineConfig({
 	name: 'portfolio-2026',
 	title: 'Portfolio CMS',
@@ -258,11 +309,16 @@ export default defineConfig({
 						of: [defineArrayMember({ type: 'sanityImage' })],
 						description: 'Images that cycle in the hero gallery. Add multiple for rotation.',
 						validation: (rule) => rule.min(1),
+						}),
+					defineField({
+						name: 'seo',
+						title: 'SEO Settings',
+						type: 'seoObject',
 					}),
 				],
 				preview: {
-					select: {
-						title: 'heroHeading',
+				select: {
+					title: 'heroHeading',
 					},
 					prepare({ title }) {
 						return {
@@ -339,6 +395,11 @@ export default defineConfig({
 								type: 'sanityImage',
 							}),
 						],
+					}),
+					defineField({
+						name: 'seo',
+						title: 'SEO Settings',
+						type: 'seoObject',
 					}),
 				],
 				preview: {
@@ -458,6 +519,11 @@ export default defineConfig({
 							}),
 						],
 					}),
+				defineField({
+					name: 'seo',
+					title: 'SEO Settings',
+					type: 'seoObject',
+				}),
 				],
 				preview: {
 					select: {
@@ -480,6 +546,7 @@ export default defineConfig({
 			sanityMediaObject,
 			linkObject,
 			linkList,
+			seoObject,
 		],
 	},
 });

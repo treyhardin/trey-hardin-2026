@@ -8,7 +8,7 @@ const { perspectiveCookie } = getDraftModeProps(Astro.cookies);
 const homepage = await getHomepage(perspectiveCookie);
 ---
 
-<BaseLayout>
+<BaseLayout seo={homepage?.seo}>
 	<HeroSection
 		heading={homepage?.heroHeading}
 		images={homepage?.heroImages}

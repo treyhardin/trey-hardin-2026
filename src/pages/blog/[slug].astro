@@ -168,7 +168,7 @@ function renderBody(body: any[]) {
 const bodyHtml = renderBody(post.body || []);
 ---
 
-<BaseLayout>
+<BaseLayout seo={post?.seo}>
 	<article class="blog-post">
 		<header class="blog-post-header">
 			{post.publishedAt && (
