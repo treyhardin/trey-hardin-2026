@@ -249,64 +249,24 @@ export default defineConfig({
 						title: 'Hero Heading',
 						type: 'string',
 						description: 'Main heading shown in the hero section',
+						validation: (rule) => rule.required(),
 					}),
 					defineField({
 						name: 'heroImages',
 						title: 'Hero Images',
 						type: 'array',
 						of: [defineArrayMember({ type: 'sanityImage' })],
-						description: 'Images that cycle in the bottom-right of the hero. Add multiple for rotation.',
-					}),
-					defineField({
-						name: 'heroMedia',
-						title: 'Hero Media',
-						type: 'sanityMedia',
-						description: 'Optional video or image (or both) for the hero section',
-					}),
-					defineField({
-						name: 'headline',
-						title: 'Headline',
-						type: 'string',
-						description: 'Main headline on the homepage',
-						validation: (rule) => rule.required(),
-					}),
-					defineField({
-						name: 'subheadline',
-						title: 'Subheadline',
-						type: 'text',
-						rows: 3,
-						description: 'Supporting text below the headline',
-					}),
-					defineField({
-						name: 'bio',
-						title: 'Bio',
-						type: 'array',
-						of: [defineArrayMember({ type: 'block' })],
-						description: 'About section — rich text',
-					}),
-					defineField({
-						name: 'ctaLabel',
-						title: 'CTA Label',
-						type: 'string',
-						description: 'Call-to-action button text',
-					}),
-					defineField({
-						name: 'ctaLink',
-						title: 'CTA Link',
-						type: 'url',
-						description: 'Where the CTA points to',
-						validation: (rule) => rule.uri({ scheme: ['http', 'https'] }),
+						description: 'Images that cycle in the hero gallery. Add multiple for rotation.',
+						validation: (rule) => rule.min(1),
 					}),
 				],
 				preview: {
 					select: {
-						title: 'headline',
-						subtitle: 'subheadline',
+						title: 'heroHeading',
 					},
-					prepare({ title, subtitle }) {
+					prepare({ title }) {
 						return {
 							title: title || 'Homepage',
-							subtitle,
 						};
 					},
 				},
