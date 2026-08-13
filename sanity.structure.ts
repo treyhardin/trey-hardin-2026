@@ -31,8 +31,8 @@ export const structure: StructureResolver = (S) =>
 						.title('Footer Settings'),
 				),
 
-			// 2. Singleton — Homepage
-			S.listItem()
+				// 2. Singleton — Homepage
+				S.listItem()
 				.title('Homepage')
 				.icon(DocumentIcon)
 				.child(

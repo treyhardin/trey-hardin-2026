@@ -1,0 +1,107 @@
+---
+import SanityImage from './SanityImage.astro';
+
+export interface HeroSectionProps {
+	heading: string;
+	images: Array<{
+		image: {
+			asset: {
+				_url: string;
+				metadata: {
+					dimensions: { width: number; height: number };
+				};
+			};
+		};
+		alt: string;
+	}>;
+}
+
+export interface HeroSectionData {
+	heading?: string;
+	images?: HeroSectionProps['images'];
+}
+
+const { heading, images } = Astro.props;
+---
+
+{heading && images && images.length > 0 && (
+<section class="hero-section">
+	<h2 class="hero-section__heading">{heading}</h2>
+
+	<div class="hero-section__gallery" id="hero-gallery">
+		{images.map((img, i) => (
+			<div class={`hero-section__image ${i === 0 ? 'hero-section__image--active' : ''}`}>
+				<SanityImage
+					image={img}
+					loading={i === 0 ? 'eager' : 'lazy'}
+					aspectRatio="auto"
+				/>
+			</div>
+		))}
+	</div>
+</section>
+)}
+
+	<script>
+		const gallery = document.getElementById('hero-gallery');
+		if (gallery) {
+			const slides = gallery.querySelectorAll('.hero-section__image');
+			if (slides.length > 1) {
+				let current = 0;
+				setInterval(() => {
+					slides[current].classList.remove('hero-section__image--active');
+					current = (current + 1) % slides.length;
+					slides[current].classList.add('hero-section__image--active');
+				}, 400);
+			}
+		}
+	</script>
+
+	<style is:inline>
+		.hero-section {
+			position: relative;
+			min-height: 60vh;
+			display: flex;
+			align-items: center;
+			padding: var(--space-6) 0;
+		}
+
+		.hero-section__heading {
+			font-family: var(--font-heading);
+			font-size: var(--font-size-3xl);
+			font-weight: var(--font-weight-bold);
+			line-height: 1.1;
+			max-width: 40ch;
+		}
+
+		.hero-section__gallery {
+			position: absolute;
+			bottom: var(--space-4);
+			right: 0;
+			width: 30vw;
+			min-width: 200px;
+			aspect-ratio: 1 / 1;
+			overflow: hidden;
+			border-radius: var(--radius-md);
+		}
+
+		.hero-section__image {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			opacity: 0;
+			transition: opacity 200ms ease;
+		}
+
+		.hero-section__image--active {
+			opacity: 1;
+		}
+
+		.hero-section__image img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	</style>
+</section>

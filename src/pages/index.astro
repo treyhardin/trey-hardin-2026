@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/base.astro';
 import SanityMedia from '../components/SanityMedia.astro';
+import HeroSection from '../components/HeroSection.astro';
 import { getHomepage } from '../lib/sanity';
 import { getDraftModeProps } from '../sanity/lib/draft-mode';
 
@@ -30,6 +31,11 @@ const homepage = await getHomepage(perspectiveCookie);
 			<a href={homepage.ctaLink} class="hero-cta">{homepage.ctaLabel}</a>
 		)}
 	</section>
+
+	<HeroSection
+		heading={homepage?.heroHeading}
+		images={homepage?.heroImages}
+	/>
 
 	<style>
 		.hero {

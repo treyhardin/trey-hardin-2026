@@ -245,6 +245,19 @@ export default defineConfig({
 				icon: DocumentIcon,
 				fields: [
 					defineField({
+						name: 'heroHeading',
+						title: 'Hero Heading',
+						type: 'string',
+						description: 'Main heading shown in the hero section',
+					}),
+					defineField({
+						name: 'heroImages',
+						title: 'Hero Images',
+						type: 'array',
+						of: [defineArrayMember({ type: 'sanityImage' })],
+						description: 'Images that cycle in the bottom-right of the hero. Add multiple for rotation.',
+					}),
+					defineField({
 						name: 'heroMedia',
 						title: 'Hero Media',
 						type: 'sanityMedia',
