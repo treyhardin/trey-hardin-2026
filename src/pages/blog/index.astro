@@ -8,7 +8,7 @@ const { perspectiveCookie } = getDraftModeProps(Astro.cookies);
 const posts = await getAllBlogPosts(perspectiveCookie);
 ---
 
-<BaseLayout>
+<BaseLayout seo={{ metaTitle: 'Writing — Trey Hardin', metaDescription: 'Writing about design, process, and things I am working on.' }}>
 	<section class="blog-listing">
 		<header class="blog-header">
 			<h1>Blog</h1>

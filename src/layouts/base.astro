@@ -40,9 +40,7 @@ if (seo?.ogImage?.image?.asset?._ref) {
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 	<meta name="generator" content={Astro.generator} />
 	<ClientRouter />
-	<title>
-		<slot name="title">{metaTitle}</slot>
-	</title>
+	<title>{metaTitle}</title>
 	<meta name="description" content={metaDescription} />
 	{seo?.noindex && <meta name="robots" content="noindex" />}
 	<!-- Open Graph -->

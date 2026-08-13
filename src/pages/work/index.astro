@@ -8,7 +8,7 @@ const { perspectiveCookie } = getDraftModeProps(Astro.cookies);
 const caseStudies = await getAllCaseStudies(perspectiveCookie);
 ---
 
-<BaseLayout>
+<BaseLayout seo={{ metaTitle: 'Selected Work — Trey Hardin', metaDescription: 'Projects led from concept to launch across large-scale ecommerce.' }}>
 	<section class="work-listing">
 		<header class="work-header">
 			<h1>Selected Work</h1>
