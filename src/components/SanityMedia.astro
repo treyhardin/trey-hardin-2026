@@ -47,6 +47,9 @@ export interface SanityMediaProps {
 	/** Fetch priority hint for the image. Use "high" for the LCP resource. */
 	fetchpriority?: 'high' | 'low';
 
+	/** Responsive `sizes` attribute for the image. */
+	sizes?: string;
+
 	/** Autoplay when visible (intersection observer). Defaults to true. */
 	autoplay?: boolean;
 
@@ -69,6 +72,7 @@ const {
 	aspectRatio = 'auto',
 	loading = 'lazy',
 	fetchpriority,
+	sizes,
 	autoplay = true,
 	muted = true,
 	loop = false,
@@ -133,6 +137,7 @@ const posterUrl = hasVideo && hasImage
 					aspectRatio={resolvedAspectRatio}
 					loading={loading}
 					fetchpriority={fetchpriority}
+					sizes={sizes}
 				/>
 			</div>
 		)}
@@ -147,6 +152,7 @@ const posterUrl = hasVideo && hasImage
 			aspectRatio={aspectRatio}
 			loading={loading}
 			fetchpriority={fetchpriority}
+			sizes={sizes}
 		/>
 	</div>
 )}

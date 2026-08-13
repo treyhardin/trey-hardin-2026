@@ -48,6 +48,9 @@ export interface SanityImageProps {
 	/** Fetch priority hint. Use "high" for the LCP resource. */
 	fetchpriority?: 'high' | 'low';
 
+	/** Responsive `sizes` attribute. Defaults to "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw". */
+	sizes?: string;
+
 	/** Enable blur-up placeholder using Sanity's tiny thumbnail. Defaults to true. */
 	blurUp?: boolean;
 
@@ -67,6 +70,7 @@ const {
 	height,
 	loading = 'lazy',
 	fetchpriority,
+	sizes,
 	blurUp = true,
 	className = '',
 	imgProps = {},
@@ -143,7 +147,7 @@ const styleAttr = Object.entries(styles).length
 	<img
 		src={src}
 		srcset={srcsetEntries}
-		sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+		sizes={sizes ?? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
 		alt={resolvedAlt}
 		loading={loading}
 		fetchpriority={fetchpriority}
