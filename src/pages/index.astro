@@ -15,6 +15,7 @@ const homepage = await getHomepage(perspectiveCookie);
 				media={homepage.heroMedia}
 				aspectRatio="16/9"
 				loading="eager"
+				fetchpriority="high"
 				autoplay={true}
 				muted={true}
 				loop={true}

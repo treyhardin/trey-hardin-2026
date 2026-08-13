@@ -44,6 +44,9 @@ export interface SanityMediaProps {
 	/** Loading strategy. Defaults to "lazy". */
 	loading?: 'lazy' | 'eager';
 
+	/** Fetch priority hint for the image. Use "high" for the LCP resource. */
+	fetchpriority?: 'high' | 'low';
+
 	/** Autoplay when visible (intersection observer). Defaults to true. */
 	autoplay?: boolean;
 
@@ -65,6 +68,7 @@ const {
 	breakpoints,
 	aspectRatio = 'auto',
 	loading = 'lazy',
+	fetchpriority,
 	autoplay = true,
 	muted = true,
 	loop = false,
@@ -128,6 +132,7 @@ const posterUrl = hasVideo && hasImage
 					breakpoints={breakpoints}
 					aspectRatio={resolvedAspectRatio}
 					loading={loading}
+					fetchpriority={fetchpriority}
 				/>
 			</div>
 		)}
@@ -141,6 +146,7 @@ const posterUrl = hasVideo && hasImage
 			breakpoints={breakpoints}
 			aspectRatio={aspectRatio}
 			loading={loading}
+			fetchpriority={fetchpriority}
 		/>
 	</div>
 )}

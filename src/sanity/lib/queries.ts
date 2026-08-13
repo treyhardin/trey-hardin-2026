@@ -2,7 +2,14 @@ import { defineQuery } from 'groq';
 
 export const HOMEPAGE_QUERY = defineQuery(`*[_type == "homepage"][0]{
   ...,
-  heroMedia{..., video{..., asset->{..., metadata}}, image{..., image{..., metadata}}},
+  heroMedia{
+    ...,
+    video{
+      ...,
+      asset->{"url": asset->url, "extension": asset->extension, "mimeType": asset->mimeType, "size": asset->size}
+    },
+    image{..., image{..., metadata}}
+  },
   featuredWork[]->,
   aboutSection{...}
 }`);

@@ -45,6 +45,9 @@ export interface SanityImageProps {
 	/** Loading strategy. Defaults to "lazy". Use "eager" for above-the-fold images. */
 	loading?: 'lazy' | 'eager';
 
+	/** Fetch priority hint. Use "high" for the LCP resource. */
+	fetchpriority?: 'high' | 'low';
+
 	/** Enable blur-up placeholder using Sanity's tiny thumbnail. Defaults to true. */
 	blurUp?: boolean;
 
@@ -63,6 +66,7 @@ const {
 	width,
 	height,
 	loading = 'lazy',
+	fetchpriority,
 	blurUp = true,
 	className = '',
 	imgProps = {},
@@ -142,6 +146,7 @@ const styleAttr = Object.entries(styles).length
 		sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 		alt={resolvedAlt}
 		loading={loading}
+		fetchpriority={fetchpriority}
 		decoding="async"
 		{...styleAttr ? { style: styleAttr } : {}}
 		{...imgProps}

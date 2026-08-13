@@ -9,6 +9,10 @@ import { perspectiveCookieName } from '@sanity/preview-url-secret/constants';
 const enableVisualEditing = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === 'true';
 const header = await getHeader();
 const footer = await getFooter();
+
+// Meta tag values (kept as constants to avoid [object Object] from <slot> in attribute expressions)
+const siteTitle = 'Trey Hardin — Design Lead';
+const siteDescription = 'Design lead with 10+ years bridging creative, engineering, and brand across large-scale ecommerce.';
 ---
 
 <!doctype html>
@@ -16,14 +20,28 @@ const footer = await getFooter();
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<!-- Fonts are self-hosted; Sanity CDN is the external origin -->
+	<link rel="preconnect" href="https://cdn.sanity.io" />
+	<!-- Preload critical body font (LCP-critical — hero text uses body font) -->
+	<link rel="preload" as="font" href="/fonts/aeonik-pro/aeonik-pro-regular.woff2" type="font/woff2" crossorigin="anonymous" />
+	<!-- Preload heading font -->
+	<link rel="preload" as="font" href="/fonts/md-nichrome/MDNichromeTrial-Regular.woff2" type="font/woff2" crossorigin="anonymous" />
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 	<meta name="generator" content={Astro.generator} />
 	<ClientRouter />
 	<title>
-		<slot name="title">Trey Hardin — Design Lead</slot>
+		<slot name="title">{siteTitle}</slot>
 	</title>
+	<meta name="description" content={siteDescription} />
+	<!-- Open Graph -->
+	<meta property="og:title" content={siteTitle} />
+	<meta property="og:description" content={siteDescription} />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={Astro.url.href} />
+	<!-- Twitter -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={siteTitle} />
+	<meta name="twitter:description" content={siteDescription} />
 	<style is:global>
 		/* ── Font Faces ── */
 
@@ -1101,6 +1119,9 @@ const footer = await getFooter();
 				openDrawer(tweakParam);
 			}
 		})();
+
+		// Enable bfcache (back/forward cache) — empty handler signals browser compatibility
+		window.addEventListener('pagehide', () => {});
 
 		// ── Accordion ──
 		(function () {

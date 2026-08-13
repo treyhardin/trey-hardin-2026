@@ -28,7 +28,7 @@ const caseStudies = await getAllCaseStudies(perspectiveCookie);
 							{study.client?.name && <span class="work-card-client">{study.client.name}</span>}
 							{study.year && <span class="work-card-year">{study.year}</span>}
 						</div>
-						<h2 class="work-card-title">{study.title}</h2>
+						<h3 class="work-card-title">{study.title}</h3>
 						{study.summary && <p class="work-card-summary">{study.summary}</p>}
 						{study.role && <span class="work-card-role">{study.role}</span>}
 					</div>
