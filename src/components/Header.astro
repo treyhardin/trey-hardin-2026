@@ -21,7 +21,7 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 
 <header class="site-header">
 	<a href="/" class="site-logo">
-		Trey Hardin
+		Trey.
 	</a>
 
 	<nav class="site-nav">
@@ -74,10 +74,9 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 	}
 
 	.nav-link {
-		font-size: var(--font-size-utility);
-		font-weight: var(--font-weight-utility);
-		text-transform: uppercase;
-		letter-spacing: var(--letter-spacing-utility);
+		font-family: var(--font-body);
+		font-size: var(--font-size-body);
+		font-weight: var(--font-weight-body);
 		color: var(--color-fg-secondary);
 		text-decoration: none;
 		transition: color var(--transition-fast);

@@ -303,6 +303,12 @@ export default defineConfig({
 						validation: (rule) => rule.required(),
 					}),
 					defineField({
+						name: 'heroSubheading',
+						title: 'Hero Subheading',
+						type: 'text',
+						description: 'Supporting text displayed alongside the hero gallery',
+					}),
+					defineField({
 						name: 'heroImages',
 						title: 'Hero Images',
 						type: 'array',

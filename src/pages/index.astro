@@ -11,6 +11,7 @@ const homepage = await getHomepage(perspectiveCookie);
 <BaseLayout seo={homepage?.seo}>
 	<HeroSection
 		heading={homepage?.heroHeading}
+		subheading={homepage?.heroSubheading}
 		images={homepage?.heroImages}
 	/>
 </BaseLayout>

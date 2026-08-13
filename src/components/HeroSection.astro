@@ -3,6 +3,7 @@ import SanityImage from './SanityImage.astro';
 
 export interface HeroSectionProps {
 	heading: string;
+	subheading?: string;
 	images: Array<{
 		image: {
 			asset: {
@@ -21,23 +22,26 @@ export interface HeroSectionData {
 	images?: HeroSectionProps['images'];
 }
 
-const { heading, images } = Astro.props;
+const { heading, subheading, images } = Astro.props;
 ---
 
 {heading && images && images.length > 0 && (
 <section class="hero-section">
 	<h2 class="hero-section__heading">{heading}</h2>
 
-	<div class="hero-section__gallery" id="hero-gallery">
-		{images.map((img, i) => (
-			<div class={`hero-section__image ${i === 0 ? 'hero-section__image--active' : ''}`}>
-				<SanityImage
-					image={img}
-					loading={i === 0 ? 'eager' : 'lazy'}
-					aspectRatio="auto"
-				/>
-			</div>
-		))}
+	<div class="hero-section__bottom">
+		{subheading && <p class="hero-section__subheading">{subheading}</p>}
+		<div class="hero-section__gallery" id="hero-gallery">
+			{images.map((img, i) => (
+				<div class={`hero-section__image ${i === 0 ? 'hero-section__image--active' : ''}`}>
+					<SanityImage
+						image={img}
+						loading="eager"
+						aspectRatio="auto"
+					/>
+				</div>
+			))}
+		</div>
 	</div>
 </section>
 )}
@@ -47,12 +51,20 @@ const { heading, images } = Astro.props;
 	if (gallery) {
 		const slides = gallery.querySelectorAll('.hero-section__image');
 		if (slides.length > 1) {
-			let current = 0;
-			setInterval(() => {
-				slides[current].classList.remove('hero-section__image--active');
-				current = (current + 1) % slides.length;
-				slides[current].classList.add('hero-section__image--active');
-			}, 400);
+			// Preload and decode all images before cycling to avoid flash
+			const allImages = gallery.querySelectorAll('img');
+			const decodePromises = Array.from(allImages).map(img => {
+				return img.decode ? img.decode().catch(() => {}) : Promise.resolve();
+			});
+
+			Promise.allSettled(decodePromises).then(() => {
+				let current = 0;
+				setInterval(() => {
+					slides[current].classList.remove('hero-section__image--active');
+					current = (current + 1) % slides.length;
+					slides[current].classList.add('hero-section__image--active');
+				}, 400);
+			});
 		}
 	}
 </script>
@@ -70,22 +82,37 @@ const { heading, images } = Astro.props;
 		font-family: var(--font-heading);
 		font-size: calc(var(--font-size-xl) * var(--sg-font-scale));
 		font-weight: var(--font-weight-bold);
-		line-height: 1.05;
+		line-height: var(--line-height-heading);
+		letter-spacing: var(--letter-spacing-heading);
 		max-width: 50ch;
+	}
+
+	.hero-section__bottom {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: var(--space-xl);
+		width: 100%;
+	}
+
+	.hero-section__subheading {
+		font-family: var(--font-body);
+		font-size: var(--font-size-body);
+		line-height: var(--line-height-body);
+		max-width: 40ch;
+		flex-shrink: 0;
 	}
 
 	.hero-section__gallery {
 		position: relative;
-		width: 20vw;
-		min-width: 150px;
-		max-width: 280px;
+		width: 28vw;
+		min-width: 200px;
+		max-width: 360px;
 		aspect-ratio: 1 / 1;
 		overflow: hidden;
 		border-radius: var(--radius-md);
-		background: #e8e8e5;
+		background: var(--color-bg-secondary);
 		flex-shrink: 0;
-		align-self: flex-end;
-		margin-bottom: var(--space-4);
 	}
 
 	.hero-section__image {
