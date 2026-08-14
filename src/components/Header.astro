@@ -24,7 +24,7 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 	<a href="/" class="site-logo h6">
 		<span class="logo-trey">Trey</span>
 		<span class="logo-expanded-clip">
-			<span class="logo-expanded"> Hardin</span>
+			<span class="logo-expanded">&nbsp;Hardin</span>
 		</span>
 		<span class="logo-dot">.</span>
 	</a>
@@ -60,6 +60,7 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 		text-decoration: none;
 		display: inline-flex;
 		align-items: baseline;
+		justify-self: start;
 	}
 
 	.site-logo:hover {
