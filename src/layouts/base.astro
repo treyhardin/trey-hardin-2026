@@ -12,7 +12,7 @@ const header = await getHeader();
 const footer = await getFooter();
 
 // SEO props from child pages
-const { seo } = Astro.props;
+const { seo, headerOffset } = Astro.props;
 
 // Resolve final meta values — page-level SEO overrides defaults
 const defaultTitle = 'Trey Hardin — Design Lead';
@@ -141,11 +141,10 @@ if (seo?.ogImage?.image?.asset?._ref) {
 		/* ── Tokens ── */
 		:root {
 			/* Colors — Light (default) */
-			--color-bg: #fafafa;
-			--color-bg-secondary: #f0f0f0;
-			--color-off-white: #f5f5f3;
-			--color-fg: #1a1a1a;
-			--color-fg-secondary: #6b6b6b;
+			--color-bg: #f0efe3;
+			--color-bg-secondary: #e6e5d9;
+			--color-fg: #0f121c;
+			--color-fg-secondary: #707278;
 			--color-accent: #000000;
 			--color-border: #e5e5e5;
 			--color-border-secondary: #d4d4d4;
@@ -217,9 +216,10 @@ if (seo?.ogImage?.image?.asset?._ref) {
 			--shadow-elevated: 0 24px 48px rgba(0, 0, 0, 0.18);
 
 			/* Transitions */
-			--transition-fast: 150ms ease;
-			--transition-base: 200ms ease;
-			--transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+			--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+			--transition-fast: 150ms var(--ease-out);
+			--transition-base: 200ms var(--ease-out);
+			--transition-slow: 300ms var(--ease-out);
 			--transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
 			/* Focus Ring */
@@ -236,6 +236,7 @@ if (seo?.ogImage?.image?.asset?._ref) {
 			/* Layout */
 			--page-margin: var(--space-sm);
 			--max-page-width: 75rem;
+			--header-height: 4rem;
 		}
 
 		/* ── Dark Theme ── */
@@ -287,12 +288,11 @@ if (seo?.ogImage?.image?.asset?._ref) {
 		}
 
 		/* ── Typography ── */
-		/* ── Headings (h1–h5 use heading font) ── */
+		/* ── Headings (h1–h4 use heading font) ── */
 		h1, .h1,
 		h2, .h2,
 		h3, .h3,
-		h4, .h4,
-		h5, .h5 {
+		h4, .h4 {
 			font-family: var(--font-heading);
 			font-weight: var(--font-weight-heading);
 			line-height: var(--line-height-heading);
@@ -303,14 +303,34 @@ if (seo?.ogImage?.image?.asset?._ref) {
 		h2, .h2 { font-size: var(--font-size-h2); }
 		h3, .h3 { font-size: var(--font-size-h3); }
 		h4, .h4 { font-size: var(--font-size-h4); }
-		h5, .h5 { font-size: var(--font-size-h5); }
 
-		/* H6 uses body font */
+		/* H5 uses body font, larger size, medium weight */
+		h5, .h5 {
+			font-family: var(--font-body);
+			font-weight: var(--font-weight-medium);
+			font-size: var(--font-size-h5);
+			line-height: var(--line-height-body);
+			letter-spacing: var(--letter-spacing-body);
+		}
+
+		/* H6 uses body font, body size, medium weight */
 		h6, .h6 {
 			font-family: var(--font-body);
-			font-weight: var(--font-weight-body);
-			font-size: var(--font-size-h6);
-			line-height: var(--line-height-heading);
+			font-weight: var(--font-weight-medium);
+			font-size: var(--font-size-body);
+			line-height: var(--line-height-body);
+			letter-spacing: var(--letter-spacing-body);
+		}
+
+		/* ── Static Grain Overlay ── */
+		.grain-overlay {
+			position: fixed;
+			inset: 0;
+			z-index: 9999;
+			pointer-events: none;
+			background: var(--color-bg);
+			opacity: 0.3;
+			filter: url(#grain);
 		}
 
 		/* Paragraphs — spacing handled by flex gap on parent containers */
@@ -363,6 +383,7 @@ if (seo?.ogImage?.image?.asset?._ref) {
 
 		html.lenis body {
 			overflow: auto;
+			display: block; /* Override flex so Lenis fixed height doesn't clip content */
 		}
 
 		/* ── Buttons ── */
@@ -580,9 +601,12 @@ if (seo?.ogImage?.image?.asset?._ref) {
 
 		main {
 			flex: 1 0 auto;
-			max-width: var(--max-page-width);
 			padding-left: var(--page-margin);
 			padding-right: var(--page-margin);
+		}
+
+		main.header-offset {
+			padding-top: var(--header-height);
 		}
 
 		footer {
@@ -889,10 +913,21 @@ if (seo?.ogImage?.image?.asset?._ref) {
 </head>
 
 <body>
+	<!-- Static grain overlay — SVG filter, GPU-accelerated, no JS -->
+	<svg style="position:absolute;width:0;height:0" aria-hidden="true">
+		<filter id="grain">
+			<feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" result="noise">
+				<animate attributeName="seed" from="1" to="100" dur="0.5s" repeatCount="indefinite" />
+			</feTurbulence>
+		</filter>
+	</svg>
+
+	<div class="grain-overlay" aria-hidden="true"></div>
+
 	<Header navLinks={header?.links} transition:persist />
 	<ContactDrawer />
 
-	<main transition:animate="fade">
+	<main transition:animate="fade" class:list={[headerOffset && 'header-offset'].filter(Boolean)}>
 		<slot />
 	</main>
 
@@ -962,10 +997,10 @@ if (seo?.ogImage?.image?.asset?._ref) {
 			const colorData = {
 				themes: {
 					light: {
-						'--color-bg': '#fafafa',
-						'--color-bg-secondary': '#f0f0f0',
-						'--color-fg': '#1a1a1a',
-						'--color-fg-secondary': '#6b6b6b',
+						'--color-bg': '#f0efe3',
+						'--color-bg-secondary': '#e6e5d9',
+						'--color-fg': '#0f121c',
+						'--color-fg-secondary': '#707278',
 						'--color-accent': '#000000',
 						'--color-border': '#e5e5e5',
 						'--color-border-secondary': '#d4d4d4',
@@ -1198,7 +1233,36 @@ if (seo?.ogImage?.image?.asset?._ref) {
 	</script>
 	<script type="module">
 		import('lenis').then(({ default: Lenis }) => {
-			const lenis = new Lenis({ duration: 1.2, easing: t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2 });
+			// cubic-bezier(0.22, 1, 0.36, 1) — matches --ease-out
+			function createCubicBezierEasing(p1x, p1y, p2x, p2y) {
+				const cx = 3 * p1x;
+				const bx = 3 * (p2x - p1x) - cx;
+				const ax = 1 - cx - bx;
+				const cy = 3 * p1y;
+				const by = 3 * (p2y - p1y) - cy;
+				const ay = 1 - cy - by;
+				function sampleX(t) { return ((ax * t + bx) * t + cx) * t; }
+				function sampleY(t) { return ((ay * t + by) * t + cy) * t; }
+				function sampleDerivativeX(t) { return (3 * ax * t + 2 * bx) * t + cx; }
+				function solveX(x) {
+					let t = x;
+					for (let i = 0; i < 8; i++) {
+						const current = sampleX(t) - x;
+						if (Math.abs(current) < 1e-6) break;
+						const d = sampleDerivativeX(t);
+						if (Math.abs(d) < 1e-6) break;
+						t -= current / d;
+					}
+					return t;
+				}
+				return (x) => sampleY(solveX(x));
+			}
+			const easeOut = createCubicBezierEasing(0.22, 1, 0.36, 1);
+			const lenis = new Lenis({
+				duration: 0.5,
+				easing: easeOut,
+				isolated: true,
+			});
 			function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
 			requestAnimationFrame(raf);
 		});

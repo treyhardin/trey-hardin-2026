@@ -71,11 +71,13 @@ const { heading, subheading, images } = Astro.props;
 
 <style is:inline>
 	.hero-section {
-		min-height: 90svh;
+		height: calc(100dvh - var(--header-height));
+		padding: var(--page-margin) 0;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
 		align-items: flex-start;
+		gap: var(--space-xl);
 	}
 
 	.hero-section__heading {
@@ -89,6 +91,7 @@ const { heading, subheading, images } = Astro.props;
 
 	.hero-section__bottom {
 		display: flex;
+		flex: 1;
 		justify-content: space-between;
 		align-items: flex-start;
 		gap: var(--space-xl);
@@ -96,18 +99,13 @@ const { heading, subheading, images } = Astro.props;
 	}
 
 	.hero-section__subheading {
-		font-family: var(--font-body);
-		font-size: var(--font-size-body);
-		line-height: var(--line-height-body);
 		max-width: 40ch;
-		flex-shrink: 0;
+		flex: 1;
 	}
 
 	.hero-section__gallery {
 		position: relative;
-		width: 28vw;
-		min-width: 200px;
-		max-width: 360px;
+		align-self: stretch;
 		aspect-ratio: 1 / 1;
 		overflow: hidden;
 		border-radius: var(--radius-md);

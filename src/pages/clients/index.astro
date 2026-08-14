@@ -30,8 +30,8 @@ const clients = await getAllClients(perspectiveCookie);
 								<SanityImage image={client.logo} aspectRatio="1/1" objectFit="contain" breakpoints={[100, 200]} />
 							</div>
 						)}
-						<h3>{client.name}</h3>
-						{client.description && <p>{client.description}</p>}
+						<h3 class="h6 client-name">{client.name}</h3>
+						{client.description && <p class="body">{client.description}</p>}
 					</a>
 				))}
 			</div>
@@ -82,14 +82,8 @@ const clients = await getAllClients(perspectiveCookie);
 			object-fit: contain;
 		}
 
-		.client-card h3 {
-			font-size: var(--font-size-h6);
+		.client-name {
 			margin-bottom: var(--space-1);
-		}
-
-		.client-card p {
-			color: var(--color-fg-secondary);
-			font-size: var(--font-size-body);
 		}
 
 		.empty-state {

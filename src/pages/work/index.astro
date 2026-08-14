@@ -25,12 +25,12 @@ const caseStudies = await getAllCaseStudies(perspectiveCookie);
 					)}
 					<div class="work-card-content">
 						<div class="work-card-meta">
-							{study.client?.name && <span class="work-card-client">{study.client.name}</span>}
-							{study.year && <span class="work-card-year">{study.year}</span>}
+							{study.client?.name && <span class="utility work-card-client">{study.client.name}</span>}
+							{study.year && <span class="utility">{study.year}</span>}
 						</div>
 						<h3 class="work-card-title">{study.title}</h3>
-						{study.summary && <p class="work-card-summary">{study.summary}</p>}
-						{study.role && <span class="work-card-role">{study.role}</span>}
+						{study.summary && <p class="body work-card-summary">{study.summary}</p>}
+						{study.role && <span class="utility work-card-role">{study.role}</span>}
 					</div>
 				</a>
 			))}
@@ -49,15 +49,11 @@ const caseStudies = await getAllCaseStudies(perspectiveCookie);
 		}
 
 		.work-header h1 {
-			font-size: var(--font-size-h2);
-			font-weight: 700;
-			letter-spacing: -0.02em;
 			margin-bottom: var(--space-2xs);
 		}
 
 		.work-subtitle {
 			color: var(--color-fg-secondary);
-			font-size: var(--font-size-lg);
 		}
 
 		.work-grid {
@@ -104,40 +100,22 @@ const caseStudies = await getAllCaseStudies(perspectiveCookie);
 			gap: var(--space-xs);
 		}
 
-		.work-card-tags {
-			display: flex;
-			gap: var(--space-sm);
-			align-items: center;
-			font-size: var(--font-size-sm);
-			text-transform: uppercase;
-			letter-spacing: 0.06em;
-			font-family: var(--font-utility);
-			color: var(--color-fg-secondary);
-		}
-
 		.work-card-client::after {
 			content: '·';
 			margin-left: var(--space-xs);
 		}
 
-		.work-card-title {
-			font-size: var(--font-size-xl);
-			font-weight: 600;
-			letter-spacing: -0.01em;
-		}
-
 		.work-card-summary {
 			color: var(--color-fg-secondary);
-			line-height: 1.6;
 			max-width: 48ch;
 		}
 
 		.work-card-role {
-			font-size: var(--font-size-sm);
-			font-family: var(--font-utility);
-			text-transform: uppercase;
-			letter-spacing: 0.04em;
 			color: var(--color-fg-secondary);
+		}
+
+		.work-card-title {
+			margin-bottom: var(--space-2xs);
 		}
 
 		.work-empty {

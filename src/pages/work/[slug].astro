@@ -172,11 +172,11 @@ const bodyHtml = renderBody(study.body || []);
 <BaseLayout seo={study?.seo}>
 	<article class="case-study">
 		<header class="case-study-header">
-			{study.client?.name && <span class="case-study-client">{study.client.name}</span>}
-			{study.year && <span class="case-study-year">{study.year}</span>}
+			{study.client?.name && <span class="utility case-study-client">{study.client.name}</span>}
+			{study.year && <span class="utility case-study-year">{study.year}</span>}
 			<h1>{study.title}</h1>
-			{study.summary && <p class="case-study-summary">{study.summary}</p>}
-			{study.role && <span class="case-study-role">{study.role}</span>}
+			{study.summary && <p class="body case-study-summary">{study.summary}</p>}
+			{study.role && <span class="utility case-study-role">{study.role}</span>}
 			{study.coverImage && (
 				<div class="case-study-cover">
 					<SanityImage image={study.coverImage} aspectRatio="16/9" loading="eager" />
@@ -200,12 +200,8 @@ const bodyHtml = renderBody(study.body || []);
 
 		.case-study-client,
 		.case-study-year {
-			font-size: var(--font-size-sm);
-			font-family: var(--font-utility);
-			text-transform: uppercase;
-			letter-spacing: 0.06em;
 			color: var(--color-fg-secondary);
-		margin-right: var(--space-sm);
+			margin-right: var(--space-sm);
 		}
 
 		.case-study-header h1 {
@@ -219,10 +215,6 @@ const bodyHtml = renderBody(study.body || []);
 		}
 
 		.case-study-role {
-			font-size: var(--font-size-sm);
-			font-family: var(--font-utility);
-			text-transform: uppercase;
-			letter-spacing: 0.04em;
 			color: var(--color-fg-secondary);
 		}
 
