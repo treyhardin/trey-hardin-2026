@@ -64,6 +64,13 @@ function renderChild(child: any, block: any) {
 	return text;
 }
 
+// Sanity stores list items as style 'bullet'/'number' (legacy), or as the listItem property on newer documents.
+function getListKind(block: any): string | null {
+	if (block.listItem === 'bullet' || block.style === 'bullet') return 'ul';
+	if (block.listItem === 'number' || block.style === 'number') return 'ol';
+	return null;
+}
+
 function renderBody(body: any[]) {
 	let html = '';
 	let i = 0;
@@ -100,11 +107,11 @@ function renderBody(body: any[]) {
 		}
 
 		if (block._type === 'block' && block.children) {
-			if (block.listItem) {
-				const listType = block.listItem === 'number' ? 'ol' : 'ul';
+			const listType = getListKind(block);
+			if (listType) {
 				html += `<${listType} class="rt-${listType}">`;
 
-				while (i < body.length && body[i]._type === 'block' && body[i].listItem === block.listItem) {
+				while (i < body.length && body[i]._type === 'block' && getListKind(body[i]) === listType) {
 					const item = body[i];
 					const children = item.children.map((child: any) => renderChild(child, item)).join('');
 					html += `<li>${children}</li>`;
