@@ -76,7 +76,7 @@ const { heading, subheading, images } = Astro.props;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
-		align-items: flex-start;
+		align-items: stretch;
 		gap: var(--space-xl);
 	}
 
@@ -91,26 +91,24 @@ const { heading, subheading, images } = Astro.props;
 
 	.hero-section__bottom {
 		display: flex;
-		flex: 1;
+		flex: 0 0 auto;
 		justify-content: space-between;
 		align-items: flex-start;
 		gap: var(--space-xl);
-		width: 100%;
+		flex-wrap: wrap;
 	}
 
 	.hero-section__subheading {
-		max-width: 40ch;
-		flex: 1;
+		flex: 0 0 30rem;
 	}
 
 	.hero-section__gallery {
 		position: relative;
-		align-self: stretch;
+		flex: 1 0 25%;
 		aspect-ratio: 1 / 1;
 		overflow: hidden;
 		border-radius: var(--radius-md);
 		background: var(--color-bg-secondary);
-		flex-shrink: 0;
 	}
 
 	.hero-section__image {
