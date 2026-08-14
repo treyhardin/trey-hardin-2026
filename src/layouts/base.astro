@@ -1,7 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
-import ContactDrawer from '../components/ContactDrawer.astro';
 import SmoothScroll from '../components/SmoothScroll';
 import { getHeader, getFooter, client } from '../lib/sanity';
 import { VisualEditingComponent as VisualEditing } from '@sanity/astro/visual-editing/component';
@@ -925,7 +924,6 @@ if (seo?.ogImage?.image?.asset?._ref) {
 	<div class="grain-overlay" aria-hidden="true"></div>
 
 	<Header navLinks={header?.links} transition:persist />
-	<ContactDrawer />
 
 	<main transition:animate="fade" class:list={[headerOffset && 'header-offset'].filter(Boolean)}>
 		<slot />

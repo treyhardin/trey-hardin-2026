@@ -1,5 +1,5 @@
 ---
-// Header: sticky top bar with name, nav links, and contact trigger
+// Header: sticky top bar with name and nav links
 // Accepts optional `navLinks` prop from Sanity; falls back to hardcoded defaults.
 const currentPath = Astro.url.pathname;
 
@@ -24,7 +24,7 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 	<a href="/" class="site-logo h6">
 		<span class="logo-trey">Trey</span>
 		<span class="logo-expanded-clip">
-			<span class="logo-expanded">Hardin</span>
+			<span class="logo-expanded"> Hardin</span>
 		</span>
 		<span class="logo-dot">.</span>
 	</a>
@@ -39,10 +39,6 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 			);
 		})}
 	</nav>
-
-	<button class="contact-trigger utility-text" aria-label="Open contact" aria-expanded="false">
-		<span class="contact-trigger-text">Contact</span>
-	</button>
 </header>
 
 <style>
@@ -53,16 +49,15 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 		right: 0;
 		z-index: var(--z-sticky);
 		height: var(--header-height);
-		display: flex;
+		display: grid;
+		grid-template-columns: auto 1fr;
 		align-items: center;
-		justify-content: space-between;
 		padding: var(--space-sm) var(--page-margin);
 	}
 
 	.site-logo {
 		color: var(--color-fg);
 		text-decoration: none;
-		flex-shrink: 0;
 		display: inline-flex;
 		align-items: baseline;
 	}
@@ -88,10 +83,6 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 		white-space: nowrap;
 	}
 
-	.logo-trey {
-		padding-right: 0.5ch;
-	}
-
 	.logo-dot {
 		display: inline;
 	}
@@ -99,6 +90,7 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 	.site-nav {
 		display: flex;
 		gap: var(--space-lg);
+		justify-self: end;
 	}
 
 	.nav-link {
@@ -126,41 +118,5 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 		height: 1px;
 		background: var(--color-accent);
 	}
-
-	.contact-trigger {
-		display: inline-flex;
-		align-items: center;
-		padding: var(--space-2xs) var(--space-xs);
-		background: none;
-		border: var(--border-width-1) solid var(--color-border);
-		border-radius: var(--radius-md);
-		color: var(--color-fg);
-		cursor: pointer;
-		transition: border-color var(--transition-fast), color var(--transition-fast),
-			background var(--transition-fast), transform var(--transition-fast);
-		flex-shrink: 0;
-	}
-
-	.contact-trigger:hover {
-		border-color: var(--color-accent);
-	}
-
-	.contact-trigger:active {
-		transform: scale(0.97);
-	}
 </style>
 
-<script is:inline>
-	(function () {
-		const trigger = document.querySelector('.contact-trigger');
-		if (!trigger) return;
-
-		trigger.addEventListener('click', () => {
-			const expanded = trigger.getAttribute('aria-expanded') === 'true';
-			trigger.setAttribute('aria-expanded', String(!expanded));
-			document.dispatchEvent(new CustomEvent('toggle-contact-drawer', {
-				detail: { open: !expanded }
-			}));
-		});
-	})();
-</script>
