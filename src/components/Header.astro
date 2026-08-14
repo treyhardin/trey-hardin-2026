@@ -73,11 +73,12 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 		max-width: 0;
 		overflow: hidden;
 		vertical-align: baseline;
-		transition: max-width var(--transition-slow);
+		transition: max-width var(--transition-slower);
 	}
 
 	.site-logo:hover .logo-expanded-clip {
 		max-width: 6rem;
+		transition-delay: 120ms;
 	}
 
 	.logo-expanded {
