@@ -50,7 +50,7 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 		z-index: var(--z-sticky);
 		height: var(--header-height);
 		display: grid;
-		grid-template-columns: auto 1fr;
+		grid-template-columns: 1fr 1fr;
 		align-items: center;
 		padding: var(--space-sm) var(--page-margin);
 	}
@@ -90,7 +90,7 @@ const navLinks: NavLink[] = Astro.props.navLinks ?? defaultNavLinks;
 	.site-nav {
 		display: flex;
 		gap: var(--space-lg);
-		justify-self: end;
+		justify-self: start;
 	}
 
 	.nav-link {
