@@ -3,6 +3,7 @@ import { DocumentIcon } from '@sanity/icons/Document';
 import { DocumentTextIcon } from '@sanity/icons/DocumentText';
 import { UsersIcon } from '@sanity/icons/Users';
 import { EditIcon } from '@sanity/icons/Edit';
+import { SparkleIcon } from '@sanity/icons/Sparkle';
 import { LinkIcon } from '@sanity/icons/Link';
 
 export const structure: StructureResolver = (S) =>
@@ -53,6 +54,11 @@ export const structure: StructureResolver = (S) =>
 			S.documentTypeListItem('blogPost')
 				.title('Blog Posts')
 				.icon(EditIcon),
+
+			// 4b. Experiments (side projects / mini case studies)
+			S.documentTypeListItem('experiment')
+				.title('Experiments')
+				.icon(SparkleIcon),
 
 			// 5. Clients
 			S.documentTypeListItem('client')

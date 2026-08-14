@@ -1,0 +1,313 @@
+---
+import BaseLayout from '../../layouts/base.astro';
+import { getExperimentBySlug, getAllExperiments } from '../../lib/sanity';
+import { urlFor } from '../../lib/image';
+import SanityImage from '../../components/SanityImage.astro';
+import { getDraftModeProps } from '../../sanity/lib/draft-mode';
+
+export async function getStaticPaths() {
+	try {
+		const experiments = await getAllExperiments();
+		// GROQ returns slug as a plain string, not an object.
+		// Return at least one path so Astro can generate the route even with empty content.
+		const paths = (experiments && experiments.length) ? experiments : [{ slug: '__empty__' }];
+		return paths.map((experiment: any) => ({
+			params: { slug: experiment.slug },
+		}));
+	} catch (e) {
+		console.error('getStaticPaths (experiments) failed:', e);
+		return [{ params: { slug: '__empty__' } }];
+	}
+}
+
+const slug = Astro.params.slug;
+const { perspectiveCookie } = getDraftModeProps(Astro.cookies);
+const experiment = await getExperimentBySlug(slug, perspectiveCookie);
+
+if (!experiment) {
+	return Astro.response = new Response('Not found', { status: 404 });
+}
+
+// Portable Text block renderer (mirrors blog/[slug].astro)
+const HEADING_MAP: Record<string, string> = {
+	h1: 'h2',
+	h2: 'h3',
+	h3: 'h4',
+	h4: 'h5',
+	h5: 'h6',
+	h6: 'h6',
+};
+
+function renderChild(child: any, block: any) {
+	let text = child.text || '';
+	const marks = child.marks || [];
+
+	if (marks.includes('code')) {
+		text = `<code>${text}</code>`;
+	}
+	if (marks.includes('em')) {
+		text = `<em>${text}</em>`;
+	}
+	if (marks.includes('strong')) {
+		text = `<strong>${text}</strong>`;
+	}
+	if (marks.includes('strike_through')) {
+		text = `<del>${text}</del>`;
+	}
+	if (marks.includes('link')) {
+		const linkMarks = block.markDefs?.filter((m: any) => m._type === 'link');
+		const linkIndex = marks.filter(m => m !== 'link').length;
+		const href = linkMarks?.[Math.min(linkIndex, linkMarks.length - 1)]?.href || '#';
+		text = `<a href="${href}" target="_blank" rel="noopener">${text}</a>`;
+	}
+
+	return text;
+}
+
+function renderBody(body: any[]) {
+	let html = '';
+	let i = 0;
+
+	while (i < body.length) {
+		const block = body[i];
+
+		if (block._type === 'sanityImage') {
+			const imgSrc = urlFor(block.image).width(1200).auto('format').url();
+			html += `<figure class="rt-image"><img src="${imgSrc}" alt="${block.alt || ''}" /></figure>`;
+			i++;
+			continue;
+		}
+
+		if (block._type === 'sanityMedia') {
+			const hasVideo = !!block.video?.asset?._ref;
+			const hasImage = !!block.image?.image?.asset?._ref;
+			if (hasVideo) {
+				const videoUrl = urlFor({ _ref: block.video.asset._ref }).url();
+				const posterUrl = hasImage
+					? urlFor(block.image.image).width(1920).auto('format').url()
+					: undefined;
+				html += `<figure class="rt-media rt-media--video">
+					<video controls muted playsinline preload="metadata"${posterUrl ? ` poster="${posterUrl}"` : ''}>
+						<source src="${videoUrl}" type="video/mp4" />
+					</video>
+				</figure>`;
+			} else if (hasImage) {
+				const imgSrc = urlFor(block.image.image).width(1200).auto('format').url();
+				html += `<figure class="rt-media rt-media--image"><img src="${imgSrc}" alt="${block.image.alt || ''}" /></figure>`;
+			}
+			i++;
+			continue;
+		}
+
+		if (block._type === 'block' && block.children) {
+			if (block.listItem) {
+				const listType = block.listItem === 'number' ? 'ol' : 'ul';
+				html += `<${listType} class="rt-${listType}">`;
+
+				while (i < body.length && body[i]._type === 'block' && body[i].listItem === block.listItem) {
+					const item = body[i];
+					const children = item.children.map((child: any) => renderChild(child, item)).join('');
+					html += `<li>${children}</li>`;
+					i++;
+				}
+				html += `</${listType}>`;
+				continue;
+			}
+
+			if (block.children.length === 0) {
+				html += `<hr class="rt-hr" />`;
+				i++;
+				continue;
+			}
+
+			const tag = block.style === 'normal' || !block.style ? 'p' : HEADING_MAP[block.style] || block.style;
+			const children = block.children.map((child: any) => renderChild(child, block)).join('');
+			html += `<${tag} class="rt-${block.style || 'normal'}">${children}</${tag}>`;
+			i++;
+		} else {
+			i++;
+		}
+	}
+	return html;
+}
+
+const bodyHtml = renderBody(experiment.body || []);
+---
+
+<BaseLayout seo={experiment?.seo}>
+	<article class="experiment-post">
+		<header class="experiment-post-header">
+			{(experiment.role || experiment.year) && (
+				<p class="experiment-post-meta">
+					{[experiment.role, experiment.year].filter(Boolean).join(' · ')}
+				</p>
+			)}
+			<h1>{experiment.title}</h1>
+			{experiment.excerpt && <p class="experiment-post-excerpt">{experiment.excerpt}</p>}
+			{experiment.coverImage && (
+				<div class="experiment-post-cover">
+					<SanityImage image={experiment.coverImage} aspectRatio="16/9" loading="eager" />
+				</div>
+			)}
+		</header>
+
+		{experiment.body && (
+			<div class="experiment-post-body" set:html={bodyHtml}></div>
+		)}
+
+		<div class="experiment-post-footer">
+			<a href="/experiments">← Back to all experiments</a>
+		</div>
+	</article>
+
+	<style>
+		.experiment-post-header {
+			margin-bottom: var(--space-xl);
+		}
+
+		.experiment-post-meta {
+			font-size: var(--font-size-sm);
+			font-family: var(--font-utility);
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			color: var(--color-fg-secondary);
+			margin-bottom: var(--space-sm);
+		}
+
+		.experiment-post-header h1 {
+			margin-bottom: var(--space-xs);
+		}
+
+		.experiment-post-excerpt {
+			color: var(--color-fg-secondary);
+			max-width: 65ch;
+			margin-bottom: var(--space-2xl);
+		}
+
+		.experiment-post-cover {
+			width: 100%;
+			overflow: hidden;
+			border-radius: var(--radius-md);
+			background: var(--color-bg-secondary);
+		}
+
+		:global(.experiment-post-body) {
+			max-width: 65ch;
+		}
+
+		:global(.experiment-post-body > *) {
+			margin-bottom: var(--space-md);
+		}
+
+		:global(.rt-h1) { font-size: var(--font-size-h1); margin-top: var(--space-2xl); margin-bottom: var(--space-xs); }
+		:global(.rt-h2) { font-size: var(--font-size-h2); margin-top: var(--space-xl); margin-bottom: var(--space-xs); }
+		:global(.rt-h3) { font-size: var(--font-size-h3); margin-top: var(--space-lg); margin-bottom: var(--space-2xs); }
+		:global(.rt-h4) { font-size: var(--font-size-h4); margin-top: var(--space-lg); margin-bottom: var(--space-2xs); }
+		:global(.rt-h5) { font-size: var(--font-size-h5); margin-top: var(--space-lg); margin-bottom: var(--space-2xs); }
+		:global(.rt-h6) { font-size: var(--font-size-h6); margin-top: var(--space-lg); margin-bottom: var(--space-2xs); }
+
+		:global(.rt-blockquote),
+		:global(.experiment-post-body blockquote) {
+			border-left: var(--border-width-1) solid var(--color-accent);
+			padding-left: var(--space-md);
+			margin: var(--space-lg) 0;
+			font-style: italic;
+			color: var(--color-fg-secondary);
+		}
+
+		:global(.rt-ul),
+		:global(.rt-ol) {
+			margin: var(--space-md) 0;
+			padding-left: var(--space-lg);
+		}
+
+		:global(.rt-ul li) {
+			list-style-type: disc;
+			margin-bottom: var(--space-2xs);
+			padding-left: var(--space-3xs);
+		}
+
+		:global(.rt-ol li) {
+			list-style-type: decimal;
+			margin-bottom: var(--space-2xs);
+			padding-left: var(--space-3xs);
+		}
+
+		:global(.rt-hr) {
+			border: none;
+			border-top: var(--border-width-1) solid var(--color-border);
+			margin: var(--space-xl) 0;
+		}
+
+		:global(.experiment-post-body code) {
+			font-family: var(--font-mono);
+			font-size: 0.875em;
+			background: var(--color-bg-secondary);
+			padding: 0.15em 0.4em;
+			border-radius: var(--radius-sm);
+		}
+
+		:global(.rt-code) {
+			font-family: var(--font-mono);
+			background: var(--color-bg-secondary);
+			padding: var(--space-md) var(--space-lg);
+			border-radius: var(--radius-md);
+			overflow-x: auto;
+			margin: var(--space-lg) 0;
+			border: var(--border-width-1) solid var(--color-border);
+		}
+
+		:global(.rt-code code) {
+			background: none;
+			padding: 0;
+			border-radius: 0;
+		}
+
+		:global(.experiment-post-body strong) {
+			font-weight: var(--font-weight-bold);
+		}
+
+		:global(.experiment-post-body del) {
+			text-decoration: line-through;
+			color: var(--color-fg-secondary);
+		}
+
+		:global(.experiment-post-body a) {
+			color: var(--color-accent);
+			text-decoration: underline;
+			text-underline-offset: var(--space-3xs);
+		}
+
+		:global(.experiment-post-body a:hover) {
+			text-decoration-thickness: 2px;
+		}
+
+		:global(.rt-image) {
+			margin: var(--space-xl) 0;
+			width: 100%;
+			border-radius: var(--radius-md);
+			overflow: hidden;
+		}
+
+		:global(.rt-image img) {
+			width: 100%;
+			display: block;
+		}
+
+		.experiment-post-footer {
+			margin-top: var(--space-xl);
+			padding-top: var(--space-lg);
+			border-top: var(--border-width-1) solid var(--color-border);
+		}
+
+		.experiment-post-footer a {
+			color: var(--color-accent);
+			text-decoration: none;
+			font-weight: 500;
+		}
+
+		.experiment-post-footer a:hover {
+			text-decoration: underline;
+		}
+	</style>
+</BaseLayout>

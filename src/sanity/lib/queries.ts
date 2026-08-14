@@ -31,6 +31,17 @@ export const CLIENTS_QUERY = defineQuery(`*[_type == "client"] | order(name asc)
   _id, _type, name, "logo": { "image": logo.image, "alt": logo.alt }, website, industry
 }`);
 
+export const EXPERIMENTS_QUERY = defineQuery(`*[_type == "experiment" && defined(slug.current)] | order(year desc, title asc) {
+  _id, _type, title, "slug": slug.current, excerpt, role, year,
+  "coverImage": { "image": coverImage.image{..., metadata}, "alt": coverImage.alt }
+}`);
+
+export const EXPERIMENT_QUERY = defineQuery(`*[_type == "experiment" && slug.current == $slug][0]{
+  ..., "coverImage": { "image": coverImage.image{..., metadata}, "alt": coverImage.alt },
+  body[]{..., _type == "sanityImage" => { "image": image{..., metadata}, "alt": alt }},
+  seo
+}`);
+
 export const HEADER_QUERY = defineQuery(`*[_type == "header"][0]{
   links[]{"label": text, "href": url, openInNewTab}
 }`);

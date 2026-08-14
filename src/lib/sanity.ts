@@ -1,6 +1,6 @@
 import { createClient } from '@sanity/client';
 import { loadQuery } from '../sanity/lib/load-query';
-import { HOMEPAGE_QUERY, CASE_STUDIES_QUERY, CASE_STUDY_QUERY, CLIENTS_QUERY, BLOG_POSTS_QUERY, BLOG_POST_QUERY, HEADER_QUERY, FOOTER_QUERY } from '../sanity/lib/queries';
+import { HOMEPAGE_QUERY, CASE_STUDIES_QUERY, CASE_STUDY_QUERY, CLIENTS_QUERY, BLOG_POSTS_QUERY, BLOG_POST_QUERY, EXPERIMENTS_QUERY, EXPERIMENT_QUERY, HEADER_QUERY, FOOTER_QUERY } from '../sanity/lib/queries';
 
 /**
  * Plain Sanity client for image URL building (urlFor helper).
@@ -53,6 +53,20 @@ export async function getAllBlogPosts(perspectiveCookie?: string) {
  */
 export async function getBlogPostBySlug(slug: string, perspectiveCookie?: string) {
 	return (await loadQuery({ query: BLOG_POST_QUERY, params: { slug }, perspectiveCookie })).data;
+}
+
+/**
+ * Fetch all experiments sorted by year descending.
+ */
+export async function getAllExperiments(perspectiveCookie?: string) {
+	return (await loadQuery({ query: EXPERIMENTS_QUERY, perspectiveCookie })).data;
+}
+
+/**
+ * Fetch a single experiment by slug.
+ */
+export async function getExperimentBySlug(slug: string, perspectiveCookie?: string) {
+	return (await loadQuery({ query: EXPERIMENT_QUERY, params: { slug }, perspectiveCookie })).data;
 }
 
 /**

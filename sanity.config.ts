@@ -6,6 +6,7 @@ import { DocumentIcon } from '@sanity/icons/Document';
 import { DocumentTextIcon } from '@sanity/icons/DocumentText';
 import { UsersIcon } from '@sanity/icons/Users';
 import { EditIcon } from '@sanity/icons/Edit';
+import { SparkleIcon } from '@sanity/icons/Sparkle';
 import { LinkIcon } from '@sanity/icons/Link';
 import { structure } from './sanity.structure';
 import { resolve } from './src/lib/resolve';
@@ -547,7 +548,92 @@ export default defineConfig({
 				},
 			}),
 
-			// ── Reusable types ──
+			// ── Experiment (mini case study / side project) ──
+		defineType({
+			name: 'experiment',
+			title: 'Experiment',
+			type: 'document',
+			icon: SparkleIcon,
+			fields: [
+				defineField({
+					name: 'title',
+					title: 'Title',
+					type: 'string',
+					validation: (rule) => rule.required(),
+				}),
+				defineField({
+					name: 'slug',
+					title: 'Slug',
+					type: 'slug',
+					options: {
+						source: 'title',
+						maxLength: 96,
+					},
+					validation: (rule) => rule.required(),
+				}),
+				defineField({
+					name: 'coverImage',
+					title: 'Cover Image',
+					type: 'sanityImage',
+				}),
+				defineField({
+					name: 'excerpt',
+					title: 'Excerpt',
+					type: 'text',
+					rows: 3,
+					description: 'Short summary shown on the listing page',
+					validation: (rule) => rule.max(300).warning('Keep it under 300 characters'),
+				}),
+				defineField({
+					name: 'role',
+					title: 'Your Role',
+					type: 'string',
+					description: 'e.g. "Solo project", "Design + build"',
+				}),
+				defineField({
+					name: 'year',
+					title: 'Year',
+					type: 'number',
+					validation: (rule) => rule.integer().min(1900).max(2100),
+				}),
+				defineField({
+					name: 'body',
+					title: 'Body',
+					type: 'array',
+					of: [
+						defineArrayMember({
+							type: 'block',
+							styles: blockStyles,
+						}),
+						defineArrayMember({
+							type: 'sanityImage',
+						}),
+					],
+				}),
+				defineField({
+					name: 'seo',
+					title: 'SEO Settings',
+					type: 'seoObject',
+				}),
+			],
+			preview: {
+				select: {
+					title: 'title',
+					subtitle: 'excerpt',
+					year: 'year',
+					media: 'coverImage',
+				},
+				prepare({ title, subtitle, year, media }) {
+					return {
+						title,
+						subtitle: [subtitle, year].filter(Boolean).join(' · '),
+						media,
+					};
+				},
+			},
+		}),
+
+		// ── Reusable types ──
 			sanityImageObject,
 			sanityMediaObject,
 			linkObject,

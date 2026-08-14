@@ -37,6 +37,15 @@ export const resolve = {
         ],
       }),
     }),
+    experiment: defineLocations({
+      select: { title: 'title', slug: 'slug.current' },
+      resolve: (doc) => ({
+        locations: [
+          { title: doc?.title || 'Untitled', href: `/experiments/${doc?.slug || ''}` },
+          { title: 'All Experiments', href: '/experiments' },
+        ],
+      }),
+    }),
     client: defineLocations({
       select: { title: 'name' },
       resolve: (doc) => ({

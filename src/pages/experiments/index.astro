@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/base.astro';
+import { getAllExperiments } from '../../lib/sanity';
+import SanityImage from '../../components/SanityImage.astro';
+import { getDraftModeProps } from '../../sanity/lib/draft-mode';
+
+const { perspectiveCookie } = getDraftModeProps(Astro.cookies);
+const experiments = await getAllExperiments(perspectiveCookie);
+---
+
+<BaseLayout seo={{ metaTitle: 'Experiments — Trey Hardin', metaDescription: 'Side projects, prototypes, and mini case studies from things I am tinkering with.' }} headerOffset>
+	<section class="experiments-listing">
+		<header class="experiments-header">
+			<h1>Experiments</h1>
+			<p class="experiments-subtitle">Side projects, prototypes, and things I'm tinkering with</p>
+		</header>
+
+		<div class="experiments-grid">
+			{experiments.map((experiment: any) => (
+				<a href={`/experiments/${experiment.slug}`} class="experiment-card">
+					{experiment.coverImage && (
+						<div class="experiment-card-image">
+							<SanityImage image={experiment.coverImage} alt={experiment.title} aspectRatio="16/10" />
+						</div>
+					)}
+					<div class="experiment-card-content">
+						{experiment.year && (
+							<span class="experiment-card-year">{experiment.year}</span>
+						)}
+						<h3 class="experiment-card-title">{experiment.title}</h3>
+						{experiment.excerpt && <p class="experiment-card-excerpt">{experiment.excerpt}</p>}
+					</div>
+				</a>
+			))}
+		</div>
+
+		{experiments.length === 0 && (
+			<div class="experiments-empty">
+				<p>No experiments yet — add some in <a href="/admin">Sanity Studio</a>.</p>
+			</div>
+		)}
+	</section>
+
+	<style>
+		.experiments-header {
+			margin-bottom: var(--space-xl);
+		}
+
+		.experiments-header h1 {
+			font-size: var(--font-size-h2);
+			font-weight: 700;
+			letter-spacing: -0.02em;
+			margin-bottom: var(--space-2xs);
+		}
+
+		.experiments-subtitle {
+			color: var(--color-fg-secondary);
+			font-size: var(--font-size-lg);
+		}
+
+		.experiments-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+			gap: var(--space-lg);
+		}
+
+		.experiment-card {
+			text-decoration: none;
+			color: inherit;
+			display: flex;
+			flex-direction: column;
+			transition: opacity 0.2s ease;
+		}
+
+		.experiment-card:hover {
+			opacity: 0.7;
+		}
+
+		.experiment-card-image {
+			aspect-ratio: 16 / 10;
+			overflow: hidden;
+			background: var(--color-bg-secondary);
+			border-radius: 4px;
+			margin-bottom: var(--space-sm);
+		}
+
+		.experiment-card-image img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.experiment-card-content {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-2xs);
+		}
+
+		.experiment-card-year {
+			font-size: var(--font-size-sm);
+			font-family: var(--font-utility);
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			color: var(--color-fg-secondary);
+		}
+
+		.experiment-card-title {
+			font-size: var(--font-size-lg);
+			font-weight: 600;
+			letter-spacing: -0.01em;
+			line-height: 1.3;
+		}
+
+		.experiment-card-excerpt {
+			color: var(--color-fg-secondary);
+			font-size: var(--font-size-sm);
+			line-height: 1.6;
+		}
+
+		.experiments-empty {
+			text-align: center;
+			padding: var(--space-xl) 0;
+			color: var(--color-fg-secondary);
+		}
+
+		.experiments-empty a {
+			color: var(--color-accent);
+		}
+	</style>
+</BaseLayout>
