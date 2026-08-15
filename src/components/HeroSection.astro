@@ -114,7 +114,9 @@ const { heading, subheading, images } = Astro.props;
 	.hero-section__gallery-wrap {
 		flex: none;
 		min-width: 0;
-		align-self: stretch;
+		align-self: stretch;   /* fills the full height of the stretched bottom row */
+		display: flex;
+		align-items: flex-end; /* pin the square to the row's bottom edge (viewport bottom) */
 	}
 
 	.hero-section__gallery {
@@ -127,19 +129,14 @@ const { heading, subheading, images } = Astro.props;
 		background: var(--color-bg-secondary);
 	}
 
-	/* Once the row gets tight, stack below the subheading — full-bleed and still a true square */
+	/* Once the row gets tight, stack below the subheading. Everything stays inside main's
+	   page-margin — the section no longer escapes to the viewport edges. The height becomes a
+	   floor rather than a cap: if heading + subheading + square exceed the fold, the hero grows
+	   and scrolls instead of squashing the square. */
 	@media (max-width: 757px) {
-		/* Escape main's page-margin so the section reaches the viewport edges; its overflow clip
-		   then sits at the screen boundary. Text keeps its inset via matching padding. The height
-		   becomes a floor rather than a cap: if heading + subheading + square exceed the fold,
-		   the hero grows and scrolls instead of squashing the square. */
 		.hero-section {
 			height: auto;
 			min-height: calc(100dvh - var(--header-height));
-			width: calc(100% + var(--page-margin) * 2);
-			margin-inline: calc(var(--page-margin) * -1);
-			padding-left: var(--page-margin);
-			padding-right: var(--page-margin);
 		}
 		.hero-section__bottom {
 			flex-direction: column;
@@ -150,12 +147,11 @@ const { heading, subheading, images } = Astro.props;
 			container-type: normal;
 		}
 		.hero-section__subheading { flex: none; width: auto; max-width: 30rem; }
-		/* Full-bleed square panel: escapes the text inset to span the whole viewport and stays
-		   1:1 at any width — sized from content (width), so no flex growth or shrinking. */
+		/* Square panel stays inside the page margin and remains a true 1:1 square at any width —
+		   sized from its (content-box) width, so no flex growth or shrinking. */
 		.hero-section__gallery-wrap {
 			flex: none;
-			width: calc(100% + var(--page-margin) * 2);
-			margin-inline: calc(var(--page-margin) * -1);
+			width: 100%;
 		}
 		.hero-section__gallery {
 			width: 100%;
