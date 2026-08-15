@@ -31,16 +31,18 @@ const { heading, subheading, images } = Astro.props;
 
 	<div class="hero-section__bottom">
 		{subheading && <p class="hero-section__subheading">{subheading}</p>}
-		<div class="hero-section__gallery" id="hero-gallery">
-			{images.map((img, i) => (
-				<div class={`hero-section__image ${i === 0 ? 'hero-section__image--active' : ''}`}>
-					<SanityImage
-						image={img}
-						loading="eager"
-						aspectRatio="auto"
-					/>
-				</div>
-			))}
+		<div class="hero-section__gallery-wrap">
+			<div class="hero-section__gallery" id="hero-gallery">
+				{images.map((img, i) => (
+					<div class={`hero-section__image ${i === 0 ? 'hero-section__image--active' : ''}`}>
+						<SanityImage
+							image={img}
+							loading="eager"
+							aspectRatio="auto"
+						/>
+					</div>
+				))}
+			</div>
 		</div>
 	</div>
 </section>
@@ -98,28 +100,51 @@ const { heading, subheading, images } = Astro.props;
 		justify-content: space-between;
 		align-items: stretch;
 		gap: var(--space-xl);
+		container-type: size;
 	}
 
 	.hero-section__subheading {
 		flex: 0 0 30rem;
+		min-width: 0;
 		align-self: flex-start;
+	}
+
+	/* The gallery is always a true square, sized to the largest one that fits both axes.
+	   Row mode: fills all space left of the subheading (width-driven), capped by row height. */
+	.hero-section__gallery-wrap {
+		flex: none;
+		min-width: 0;
+		align-self: stretch;
 	}
 
 	.hero-section__gallery {
 		position: relative;
-		flex: 1 1 0;
-		min-width: 25%;
-		height: 100%;
+		width: min(calc(100cqi - 30rem - var(--space-xl)), 100cqh);
+		aspect-ratio: 1 / 1;
+		min-width: 0;
 		overflow: hidden;
 		border-radius: var(--radius-md);
 		background: var(--color-bg-secondary);
 	}
 
-	/* Once the gallery reaches its 25% floor, stack it below the subheading */
+	/* Once the row gets tight, stack below the subheading — full width whenever vertical space allows */
 	@media (max-width: 757px) {
 		.hero-section__bottom { flex-direction: column; }
 		.hero-section__subheading { flex: none; width: auto; max-width: 30rem; }
-		.hero-section__gallery { flex: 1 1 auto; min-height: 0; min-width: 0; height: auto; align-self: stretch; }
+		/* Stacked mode: wrap consumes exactly the height left after the subheading.
+		   flex-basis 0 removes intrinsic-size feedback (no circularity with cq units),
+		   min-height 0 lets it yield gracefully at extreme aspect ratios, and its own
+		   size container gives the square a determinate box to measure against. */
+		.hero-section__gallery-wrap {
+			flex: 1 1 0;
+			width: 100%;
+			align-self: stretch;
+			min-height: 0;
+			container-type: size;
+		}
+		/* Largest true square fitting both axes of the wrap. The subheading sits above,
+		   so its basis is no longer subtracted from the width term. */
+		.hero-section__gallery { width: min(100cqi, 100cqh); }
 	}
 
 	.hero-section__image {
