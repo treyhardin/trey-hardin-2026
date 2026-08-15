@@ -127,24 +127,32 @@ const { heading, subheading, images } = Astro.props;
 		background: var(--color-bg-secondary);
 	}
 
-	/* Once the row gets tight, stack below the subheading — full width whenever vertical space allows */
+	/* Once the row gets tight, stack below the subheading — and run the gallery edge-to-edge */
 	@media (max-width: 757px) {
+		/* Escape main's page-margin so the section reaches the viewport edges; its overflow clip
+		   then sits at the screen boundary. Text keeps its inset via matching padding. */
+		.hero-section {
+			width: calc(100% + var(--page-margin) * 2);
+			margin-inline: calc(var(--page-margin) * -1);
+			padding-left: var(--page-margin);
+			padding-right: var(--page-margin);
+		}
 		.hero-section__bottom { flex-direction: column; }
 		.hero-section__subheading { flex: none; width: auto; max-width: 30rem; }
-		/* Stacked mode: wrap consumes exactly the height left after the subheading.
-		   flex-basis 0 removes intrinsic-size feedback (no circularity with cq units),
-		   min-height 0 lets it yield gracefully at extreme aspect ratios, and its own
-		   size container gives the square a determinate box to measure against. */
+		/* Full-bleed panel: escapes the text inset to span the whole viewport and fills all
+		   remaining height. flex-basis 0 + min-height 0 let it yield gracefully when heading
+		   and subheading eat most of a short screen. */
 		.hero-section__gallery-wrap {
 			flex: 1 1 0;
-			width: 100%;
-			align-self: stretch;
 			min-height: 0;
-			container-type: size;
+			width: calc(100% + var(--page-margin) * 2);
+			margin-inline: calc(var(--page-margin) * -1);
 		}
-		/* Largest true square fitting both axes of the wrap. The subheading sits above,
-		   so its basis is no longer subtracted from the width term. */
-		.hero-section__gallery { width: min(100cqi, 100cqh); }
+		.hero-section__gallery {
+			width: 100%;
+			height: 100%;
+			aspect-ratio: auto; /* stacked mode fills the panel instead of staying square */
+		}
 	}
 
 	.hero-section__image {
