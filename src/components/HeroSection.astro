@@ -75,10 +75,11 @@ const { heading, subheading, images } = Astro.props;
 		padding: var(--page-margin) 0;
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
-		align-items: stretch;
+		justify-content: flex-end;
+		align-items: flex-start;
 		gap: var(--space-xl);
-	}
+		overflow: hidden;
+}
 
 	.hero-section__heading {
 		font-family: var(--font-heading);
@@ -91,24 +92,34 @@ const { heading, subheading, images } = Astro.props;
 
 	.hero-section__bottom {
 		display: flex;
-		flex: 0 0 auto;
+		flex: 1 1 auto;
+		min-height: 0;
+		width: 100%;
 		justify-content: space-between;
-		align-items: flex-start;
+		align-items: stretch;
 		gap: var(--space-xl);
-		flex-wrap: wrap;
 	}
 
 	.hero-section__subheading {
 		flex: 0 0 30rem;
+		align-self: flex-start;
 	}
 
 	.hero-section__gallery {
 		position: relative;
-		flex: 1 0 25%;
-		aspect-ratio: 1 / 1;
+		flex: 1 1 0;
+		min-width: 25%;
+		height: 100%;
 		overflow: hidden;
 		border-radius: var(--radius-md);
 		background: var(--color-bg-secondary);
+	}
+
+	/* Once the gallery reaches its 25% floor, stack it below the subheading */
+	@media (max-width: 757px) {
+		.hero-section__bottom { flex-direction: column; }
+		.hero-section__subheading { flex: none; width: auto; max-width: 30rem; }
+		.hero-section__gallery { flex: 1 1 auto; min-height: 0; min-width: 0; height: auto; align-self: stretch; }
 	}
 
 	.hero-section__image {
