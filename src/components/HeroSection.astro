@@ -127,31 +127,40 @@ const { heading, subheading, images } = Astro.props;
 		background: var(--color-bg-secondary);
 	}
 
-	/* Once the row gets tight, stack below the subheading — and run the gallery edge-to-edge */
+	/* Once the row gets tight, stack below the subheading — full-bleed and still a true square */
 	@media (max-width: 757px) {
 		/* Escape main's page-margin so the section reaches the viewport edges; its overflow clip
-		   then sits at the screen boundary. Text keeps its inset via matching padding. */
+		   then sits at the screen boundary. Text keeps its inset via matching padding. The height
+		   becomes a floor rather than a cap: if heading + subheading + square exceed the fold,
+		   the hero grows and scrolls instead of squashing the square. */
 		.hero-section {
+			height: auto;
+			min-height: calc(100dvh - var(--header-height));
 			width: calc(100% + var(--page-margin) * 2);
 			margin-inline: calc(var(--page-margin) * -1);
 			padding-left: var(--page-margin);
 			padding-right: var(--page-margin);
 		}
-		.hero-section__bottom { flex-direction: column; }
+		.hero-section__bottom {
+			flex-direction: column;
+			/* Row mode uses container queries for the "largest square that fits" sizing, but a
+			   size container reports no content height to its parent — with the section now
+			   auto-height it would collapse back to the min-height and clip the square. The
+			   stacked square is width-driven instead, so containment isn't needed here. */
+			container-type: normal;
+		}
 		.hero-section__subheading { flex: none; width: auto; max-width: 30rem; }
-		/* Full-bleed panel: escapes the text inset to span the whole viewport and fills all
-		   remaining height. flex-basis 0 + min-height 0 let it yield gracefully when heading
-		   and subheading eat most of a short screen. */
+		/* Full-bleed square panel: escapes the text inset to span the whole viewport and stays
+		   1:1 at any width — sized from content (width), so no flex growth or shrinking. */
 		.hero-section__gallery-wrap {
-			flex: 1 1 0;
-			min-height: 0;
+			flex: none;
 			width: calc(100% + var(--page-margin) * 2);
 			margin-inline: calc(var(--page-margin) * -1);
 		}
 		.hero-section__gallery {
 			width: 100%;
-			height: 100%;
-			aspect-ratio: auto; /* stacked mode fills the panel instead of staying square */
+			height: auto;
+			aspect-ratio: 1 / 1; /* square regardless of width */
 		}
 	}
 
