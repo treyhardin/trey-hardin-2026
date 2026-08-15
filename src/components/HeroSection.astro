@@ -107,6 +107,11 @@ const { heading, subheading, images } = Astro.props;
 		flex: 0 0 30rem;
 		min-width: 0;
 		align-self: flex-start;
+		/* Top-align with the gallery square, not just the row. When the square is width-capped it's
+		   shorter than the row and sits bottom-pinned, so push the subheading down by exactly
+		   (rowH - S). Same min() expression as the gallery width, in the same size container, so
+		   they stay locked together; when height-capped this resolves to 0. */
+		margin-top: calc(100cqh - min(calc(100cqi - 30rem - var(--space-xl)), 100cqh));
 	}
 
 	/* The gallery is always a true square, sized to the largest one that fits both axes.
@@ -146,7 +151,7 @@ const { heading, subheading, images } = Astro.props;
 			   stacked square is width-driven instead, so containment isn't needed here. */
 			container-type: normal;
 		}
-		.hero-section__subheading { flex: none; width: auto; max-width: 30rem; }
+		.hero-section__subheading { flex: none; width: auto; max-width: 30rem; margin-top: 0; } /* no size container in stacked mode */
 		/* Square panel stays inside the page margin and remains a true 1:1 square at any width —
 		   sized from its (content-box) width, so no flex growth or shrinking. */
 		.hero-section__gallery-wrap {
